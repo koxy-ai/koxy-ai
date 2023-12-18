@@ -4,8 +4,6 @@ import { NextResponse } from 'next/server'
 
 export async function GET(request: Request) {
 
-    const url = "https://curly-bassoon-566w4rwxp6q3j4-3000.app.github.dev"
-
     const requestUrl = new URL(request.url)
     const code = requestUrl.searchParams.get('code')
 
@@ -14,6 +12,6 @@ export async function GET(request: Request) {
         await supabase.auth.exchangeCodeForSession(code)
     }
 
-    return NextResponse.redirect(url)
+    return NextResponse.redirect(requestUrl.origin)
 
 }

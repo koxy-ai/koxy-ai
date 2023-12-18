@@ -1,17 +1,17 @@
-"use client"
+"use server"
 
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
+import { cookies } from 'next/headers'
 
-export default async function requireAuth(Component: any) {
+export default async function requireAuth() {
 
-    const supabase = createClientComponentClient()
+    const supabase = createServerComponentClient({ cookies })
     const {data: {user}} = await supabase.auth.getUser()
 
     if (!user) {
-        window.location.href = '/auth'
         return null
     }
 
-    return Component
+    return user
 
 }

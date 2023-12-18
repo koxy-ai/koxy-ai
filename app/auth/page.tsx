@@ -6,8 +6,6 @@ import Icon from '../../components/Icon';
 
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 
-const url = "https://curly-bassoon-566w4rwxp6q3j4-3000.app.github.dev"
-
 export default async function Home() {
 
     const supabase = createClientComponentClient()
@@ -21,7 +19,7 @@ export default async function Home() {
         await supabase.auth.signInWithOAuth({
             provider: 'github',
             options: {
-                redirectTo: `${url}/api/auth/callback`
+                redirectTo: `${location.origin}/api/auth/callback`
             }
         })
     }

@@ -1,16 +1,17 @@
 "use client"
 
-import { InterfaceNav } from "@/components/layout/Navbar"
-import { type User } from '@supabase/auth-helpers-nextjs'
+import Auth from "../auth/Auth"
 
 export default function () {
 
-    
+    return <Auth Comp={Page} />
+
+}
+
+function Page() {
 
     return (
-        <>
-            
-        </>
+        <div>Hello</div>    
     )
 
 }
