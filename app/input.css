@@ -1,3 +1,117 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+body {
+	background: black !important;
+}
+
+.line {
+	@apply w-[100%] border-t-1 border-[var(--gray-a4)];
+}
+
+.glass {
+	background: rgba(255, 255, 255, 0.05);
+	border-radius: 16px;
+	box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+	backdrop-filter: blur(10px);
+	-webkit-backdrop-filter: blur(5px);
+	border: 1px solid rgba(255, 255, 255, 0.12);
+	box-shadow: ;
+}
+
+.gradient {
+	background: rgb(124,58,237);
+	background: linear-gradient(90deg, rgba(124,58,237,1) 0%, rgba(168,85,247,1) 100%); 
+}
+
+.gradient2 {
+	background: rgb(124,58,237);
+	background: linear-gradient(90deg, rgba(255, 255, 255,.03) 0%, rgba(0, 0, 0) 100%); 
+}
+
+.sidebar {
+	@apply h-screen bg-[#24242424] backdrop-blur-xl z-20 flex flex-col;
+}
+
+.sidebarButton {
+	@apply flex items-center w-full p-1 pl-2 pr-2 gap-2 text-xs text-gray-300 hover:bg-[var(--gray-a2)] rounded-md transition-all duration-500 min-w-max;
+}
+
+.sidebarButtonIcon {
+	@apply w-6 h-6 border-1 border-[var(--gray-a5)] rounded-md mr-1 flex items-center justify-center;
+}
+
+.sidebarButton:hover {
+	text-shadow: 0px 0px 5px rgba(255, 255, 255, .4);
+}
+
+.navLogo {
+	@apply w-[2rem] h-[2rem] gradient rounded-[.4rem] flex items-center justify-center border-1 border-[var(--gray-a7)] cursor-pointer;
+}
+
+.mainHead {
+	@apply bg-[#31313131] border-b-1 border-[var(--gray-a4)] p-6 flex items-center;
+}
+
+.innerMain {
+	@apply min-h-screen max-h-screen overflow-y-auto w-full
+}
+
+.upgradeBanner {
+	@apply w-full flex items-center justify-center gradient p-2 border-b-1 border-[var(--gray-a4)] cursor-pointer;
+}
+
+.errorContainer {
+	@apply fixed bottom-4 right-4 border-1 border-red-400 p-3 pl-5 pr-5 rounded-xl bg-red-500/10 backdrop-blur-md min-w-[18rem] max-w-[20rem] transition-all duration-300;
+}
+
+.successContainer {
+	@apply fixed bottom-4 right-4 border-1 border-green-400 p-3 pl-5 pr-5 rounded-xl bg-green-500/10 backdrop-blur-md min-w-[18rem] max-w-[20rem] transition-all duration-300;
+}
+
+.commandButton {
+	@apply w-full text-xs hover:bg-[#31313131] p-1.5 rounded-md flex items-center gap-2 cursor-default opacity-80;
+}
+
+.hidden{
+	display: none;
+}
+
+.interfaceNav {
+	@apply fixed top-0 left-0 w-14 h-full border-r-1 border-[var(--gray-a4)] bg-[#24242424] backdrop-blur-xl flex flex-col items-center gap-3 m-0 p-0 mx-auto overflow-y-auto pb-3 z-50;
+}
+
+.light {
+	text-shadow: 0px 0px 5px rgba(255, 255, 255, .4);
+}
+
+.categoryButton {
+	@apply flex items-center p-1 pl-2 pr-2 text-xs gap-2 border-1 border-[#35353535] rounded-md bg-[#31313131];
+}
+
+.activeCategoryButton {
+	@apply flex items-center p-1 pl-2 pr-2 text-xs gap-2 border-1 border-[#61616161] rounded-md bg-[#35353535];
+}
+
+.modelCard {
+	@apply p-4 bg-[#28282828] hover:bg-[#31313131] border-1 border-[#35353535] cursor-pointer hover:border-[#51515151] rounded-xl flex transition-all;
+}
+
+.recommendedModel {
+	@apply p-1 pl-2 pr-2 text-gray-300 cursor-pointer flex items-center gap-2 rounded-md bg-[#31313131] border-1 border-[#51515151] max-w-max;
+}
+
+.categoryIcon {
+	@apply w-16 h-16 rounded-md relative text-gray-400 flex items-center bg-[#31313131] justify-center border-1 border-[#61616161] transition-all;
+	box-shadow: 3px 3px 0px 2px #38383838;
+}
+
+.categoryIcon:hover {
+	box-shadow: 5px 5px 0px 2px #38383838;
+}
+
+.modelTag {
+	@apply text-xs p-1 bg-[#35353535] max-w-max text-gray-300 rounded-md hover:underline cursor-pointer flex items-center gap-1
+text-xs p-1 bg-[#35353535] max-w-max text-gray-300 rounded-md hover:underline cursor-pointer flex items-center gap-1;
+}

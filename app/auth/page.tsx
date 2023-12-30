@@ -6,14 +6,20 @@ import Icon from '../../components/Icon';
 
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 
-export default async function Home() {
+export default function Page() {
 
     const supabase = createClientComponentClient()
-    const {data: {session}} = await supabase.auth.getSession()
 
-    if (session) {
-        window.location.href = '/'
+    const getSession = async () => {
+        const {data: {session}} = await supabase.auth.getSession()
+        return session
     }
+
+    getSession().then( (session: any) => {
+        if (session) {
+            window.location.href = '/'
+        }
+    })
 
     const handleAuth = async () => {
         await supabase.auth.signInWithOAuth({
@@ -31,30 +37,40 @@ export default async function Home() {
                 style={{
                     minWidth: 500,
                     maxWidth: 500,
-                    padding: "1rem"
+                    padding: "2rem",
+                    borderColor: "rgba(255, 255, 255, .5)",
+                    background: "#23232323"
                 }}
             >
-                <Flex direction="column" gap="4">
+                <Flex direction="column" gap="4" align="center">
 
                     <Image
                         alt="Koxy AI Logo"
-                        src="/modern.png"
-                        width={40}
-                        height={40}
+                        src="/koxy-white.png"
+                        width={65}
+                        height={65}
                     />
 
-                    <Heading size="6">Welcome to Koxy AI</Heading>
-                    <Text as='p' size="2" color="gray">
+                    <Heading
+                        size="6"
+                        style={{
+                            marginTop: "1rem"
+                        }}
+                    >
+                        Welcome to Koxy AI
+                    </Heading>
+                    <Text as='p' size="2" color="gray" align='center'>
                         Connect your Github account and start building your AI-powered serverless back-end
                     </Text>
 
                     <Button
-                        onClick={handleAuth}
-                        variant='outline'
                         highContrast
+                        onClick={handleAuth}
+                        variant='classic'
                         size="3"
                         style={{
-                            marginTop: "1.2rem"
+                            marginTop: "2rem",
+                            width: "75%"
                         }}
                     >
                         <Icon id="brand-github-filled" size="larger" />

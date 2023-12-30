@@ -11,6 +11,10 @@ const config: Config = {
       borderWidth: {
         '1': "1px"
       },
+      colors: {
+        "border": "#51515151",
+        "bg": "#121113"
+      },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
         'gradient-conic':
