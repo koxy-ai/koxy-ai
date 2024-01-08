@@ -2,10 +2,11 @@
 import isArray from "@/scripts/isArray"
 import is from "@/scripts/is"
 
-export type PrsedModelData = {
+export type ParsedModelData = {
 	id: string,
 	pipeline_tag: string,
 	license: string | null,
+	readme: string,
 	plan: string,
 	developer: string | null,
 	model_type: string | null,
@@ -17,10 +18,11 @@ export type PrsedModelData = {
 
 export default function parseModelData(model: any) {
 
-	const parsedData: PrsedModelData = {
+	const parsedData: ParsedModelData = {
 		id: model.id,
 		pipeline_tag: model.pipeline_tag,
 		license: model?.cardData?.license || null,
+		readme: model?.readme || "<h1>Readme not found for this model</h1>",
 		plan: model?.plan || "free",
 		developer: getDeveloper(model),
 		model_type: model?.config?.model_type || null,
@@ -65,7 +67,7 @@ function getArchitecture(model: any): string | null {
 // This function will return an array of the model's datasets if any
 function getDatasets(model: any): Array<string> {
 
-	const res = []
+	const res: Array<string> = []
 	const datasets = model?.cardData?.datasets
 
 	isArray(datasets, (data: Array<string>) => ( data.forEach(dataset => ( res.push(dataset) )) ))

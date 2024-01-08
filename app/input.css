@@ -2,8 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+
 body {
 	background: black !important;
+	font-family: 'Roboto', sans-serif;
 }
 
 .line {
@@ -114,4 +117,81 @@ body {
 .modelTag {
 	@apply text-xs p-1 bg-[#35353535] max-w-max text-gray-300 rounded-md hover:underline cursor-pointer flex items-center gap-1
 text-xs p-1 bg-[#35353535] max-w-max text-gray-300 rounded-md hover:underline cursor-pointer flex items-center gap-1;
+}
+
+table {
+	border-radius: 10px !important;
+}
+
+/* Model readme */
+
+#readmeContainer h1 {
+	@apply text-xl mt-2 mb-4 opacity-90;
+	font-weight: bold;
+}
+
+#readmeContainer h2 {
+	@apply text-[1.1rem] mt-2 mb-4 opacity-90;
+	font-weight: bold;
+}
+
+#readmeContainer h3 {
+	@apply text-[0.9rem] mt-2 mb-4 opacity-90;
+	font-weight: bold;
+}
+
+#readmeContainer hr {
+	@apply border-transparent m-2;
+}
+
+#readmeContainer ol {
+	@apply p-3 pt-1;
+}
+
+#readmeContainer ul {
+	@apply p-3 pt-1 pb-1 text-sm opacity-80;
+}
+
+#readmeContainer li {
+	@apply pb-3 opacity-80 text-sm;
+}
+
+#readmeContainer a {
+	@apply opacity-70 underline hover:opacity-100;
+}
+
+#readmeContainer p {
+	@apply pb-6 text-sm opacity-80;
+}
+
+#readmeContainer blockquote {
+	@apply p-3 pt-1 pb-1 border-l-2 border-[var(--gray-a4)] mb-6 opacity-80;
+}
+
+#readmeContainer blockquote p {
+	@apply pb-0;
+}
+
+#readmeContainer pre {
+	@apply mb-6 border-1 border-[var(--gray-a4)] rounded-md bg-[#31313131] overflow-x-auto p-3 text-[#919191];
+}
+
+#readmeContainer summary {
+	@apply mb-4 opacity-70 hover:opacity-100 cursor-pointer;
+}
+
+#readmeContainer table {
+	@apply border-1 w-full mb-4;
+}
+
+#readmeContainer thead {
+	@apply border-1 border-[var(--gray-a4)];
+}
+
+#readmeContainer tr {
+	@apply p-2 border-1 border-[var(--gray-a4)] text-start;
+}
+
+#readmeContainer td {
+	@apply p-2 text-center border-1 border-[var(--gray-a3)];
 }

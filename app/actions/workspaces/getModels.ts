@@ -11,9 +11,8 @@ export default async function(id: string) {
 	const supabase = supabaseServer()
 
 	const { error, data } = await supabase
-		.from("workspaces")
-		.select("models")
-		.eq("id", id)
+		.from("models")
+		.select("*")
 
 	if (error) {
 		return {
@@ -21,12 +20,6 @@ export default async function(id: string) {
 		}
 	}
 
-	const wantedData = data[0]
-
-	if (!wantedData || typeof wantedData !== "object") {
-		return undefined
-	}
-
-	return wantedData?.models
+	return data
 
 }

@@ -27,7 +27,7 @@ const Init = ({ user }: Props) => ( <WorkspacePage user={user} Comp={Page} /> )
 
 function Page({ workspace, user }: PageProps) {
 
-	const config: Config = {
+	const config: any = {
 		workspace,
 		navbar: {
 			active: "models"
@@ -93,7 +93,7 @@ function Page({ workspace, user }: PageProps) {
 
 				<div className="p-6">
 
-					<div className="flex items-center gap-3 overflow-x-auto">
+					<div className="flex items-center gap-6 overflow-x-auto">
 						{categories.map(category => (
 							<div
 								onClick={() => { changeCategory(categories.indexOf(category)) }}
@@ -108,7 +108,7 @@ function Page({ workspace, user }: PageProps) {
 
 					{categoryModels.length < 1 ? <Loading /> : null}
 
-					<div className="flex flex-col gap-6 grid grid-cols-2 md:grid-cols-1 lg:grid-cols-2 transition-all">
+					<div className="flex flex-col gap-3 grid grid-cols-2 md:grid-cols-1 lg:grid-cols-2">
 						{categoryModels.map(model => (
 							<div
 								onClick={() => {
@@ -117,6 +117,7 @@ function Page({ workspace, user }: PageProps) {
 									router.push(path)
 								}}
 								key={model._id}
+								className="modelCard"
 							>
 								<Model model={model} />
 							</div>
@@ -133,7 +134,7 @@ function Page({ workspace, user }: PageProps) {
 
 function CategoryHead({ categoryModels, activeCategory }: CategoryProps) {
 	return (
-		<div className="p-12 flex gap-3 relative mt-6 mb-6 border-1 rounded-xl border-[#41414141] bg-[#23232323]">
+		<div className="p-12 flex gap-3 relative mt-6 mb-6 border-1 rounded-xl border-[#61616161] bg-[#21212121]">
 			<div className="flex flex-col gap-3 w-full justify-center">
 				<Badge
 					variant="outline"
@@ -170,39 +171,14 @@ function RecommendedModel({ categoryModels, activeCategory }: CategoryProps) {
 			</Tooltip>
 		</div>		
 	)
-
 }
 
 function Model({ model }: { model: any }) {
 	return (
-		<div className="modelCard">
-			<div className="flex flex-col gap-3 w-full truncate">
-				<Tooltip content={model.id}>
-					<div className="flex items-center gap-1 text-gray-400">
-						{
-							model.downloads > 500000 ? <Icon id="discount-check-filled" /> : null
-						}
-						<Heading size="3" color="gray">
-							{model.id}
-						</Heading>
-					</div>
-				</Tooltip>
-				<div className="flex items-center gap-3 opacity-60">
-					<div className="flex items-center gap-1">
-						<Icon id="test-pipe" />
-						<div className="text-xs">{model.pipeline_tag}</div>
-					</div>
-					<div className="flex gap-1">
-						<Icon id="coins" />
-						<div className="text-xs">{model.price || "free"}</div>
-					</div>
-				</div>
-			</div>
-			<div className="flex justify-end max-h-max opacity-70 pl-4">
-				<div className="flex gap-1">
-					<Icon id="package" />
-					<div className="text-xs">{model.library_name}</div>
-				</div>
+		<div>
+			<div>
+				<Heading size="3" color="gray">{model.id}</Heading>
+				<div className="text-sm opacity-60">{model.pipeline_tag}</div>
 			</div>
 		</div>
 	)
@@ -210,7 +186,7 @@ function Model({ model }: { model: any }) {
 
 function CategoryButton({ category, activeCategory }: { category: Category, activeCategory: number }) {
 	return (
-		<button className={`${activeCategory === categories.indexOf(category) ? "activeCategoryButton" : "categoryButton"}`}>
+		<button className={`${activeCategory === categories.indexOf(category) ? "activeCategoryButton" : "categoryButton"} min-w-max`}>
 			<div className="w-6 h-6 flex items-center justify-center bg-[#31313131] rounded-md border-1 border-[#35353535]">
 				<div className="opacity-80">
 					<Icon id={category.icon} size="small" />
@@ -227,7 +203,9 @@ function CategoryIcon({ activeCategory }: { activeCategory: number }) {
 				<DashedBorders />
 			<div className="categoryIcon">
 				<Icon id={categories[activeCategory].icon} size="21px" />
-				<DashedBorders />
+				<div className="opacity-60">
+					<DashedBorders />
+				</div>
 			</div>
 		</div>
 	)

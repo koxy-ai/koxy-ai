@@ -4,6 +4,7 @@ import {
 	ResizablePanelGroup,
 } from "@/components/ui/resizable"
 
+import React from "react"
 import Sidebar, { type SidebarAction } from "@/components/layout/Sidebar"
 import { InterfaceNav } from "@/components/layout/Navbar"
 import { type User } from "@supabase/auth-helpers-nextjs"
@@ -19,7 +20,7 @@ export type Config = {
 	}
 }
 
-export default function WorkspaceLayout({ config, ...props }: { config: Config, props: any }) {
+export default function WorkspaceLayout({ config, children }: { config: Config, children: React.JSX.Element }) {
 
 	return (
 		<>
@@ -36,7 +37,7 @@ export default function WorkspaceLayout({ config, ...props }: { config: Config, 
 				</ResizablePanel>
 				<ResizableHandle withHandle />
 				<ResizablePanel>
-					{props.children}
+					{children}
 				</ResizablePanel>
 			</ResizablePanelGroup>
 
