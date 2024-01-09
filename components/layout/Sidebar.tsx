@@ -198,12 +198,17 @@ function WorkspacesDialog({ workspace, router }: { workspace: any, router: any }
             }}
         >
 
-            <input
-                id="searchWorkspacesInput"
-                onInput={searchWorkspaces}
-                className="w-full bg-transparent border-b-1 border-[var(--gray-a4)] p-3 text-xs outline-none"
-                placeholder="Search your workspaces"
-            />
+            <div
+                className="border-b-1 border-[var(--gray-a4)] p-3 flex items-center gap-3"
+            >
+                <Icon id="search" />
+                <input
+                    id="searchWorkspacesInput"
+                    onInput={searchWorkspaces}
+                    className="w-full bg-transparent text-xs outline-none"
+                    placeholder="Search your workspaces"
+                />
+            </div>
             
             <div className="flex flex-col p-3 pb-1 gap-3">
                 <Text style={{filter: "opacity(.75)"}} size="1" color="gray">Your workspaces</Text>

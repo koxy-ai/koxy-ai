@@ -10,6 +10,7 @@ import Icon from "@/components/Icon"
 import WorkspaceHeadInfo from "@/components/layout/WorkspaceHeadInfo"
 import Image from "next/image"
 
+import createProject from "@/app/actions/deno/projects/create"
 import getModels from "@/app/actions/workspaces/getModels"
 import isArray from "@/scripts/isArray"
 
@@ -24,6 +25,8 @@ const WorkspaceModels = () => ( <Auth Comp={Init} /> )
 const Init = ({ user }: Props) => ( <WorkspacePage user={user} Comp={Page} /> )
 
 function Page({ workspace, user }: PageProps) {
+
+	// createProject("my-project", "custom projects")
 
 	const config: Config = {
 		workspace,
