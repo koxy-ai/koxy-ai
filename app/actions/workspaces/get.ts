@@ -12,7 +12,7 @@ export default async function getWorkspace(id: string) {
 
 	const { error, data } = await supabase
 		.from("workspaces")
-		.select("id, name, plan")
+		.select("id, name, plan, team_id")
 		.eq("id", id)
 
 	if (error) {

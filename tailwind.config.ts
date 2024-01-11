@@ -10,7 +10,7 @@ const config: Config = {
   theme: {
     extend: {
       borderWidth: {
-        '1': "1px"
+        '1': ".1rem"
       },
       colors: {
         "border": "#51515151",

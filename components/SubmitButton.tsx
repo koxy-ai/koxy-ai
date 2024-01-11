@@ -1,32 +1,54 @@
 "use client"
 
-import { useState } from "react"
+import React, { useState } from "react"
+import { Button } from "@radix-ui/themes"
 
 type Props = {
-	title: string,
+	title?: string,
 	action: Function,
-	size: string,
-	variant: string,
-	parameters?: any,
+	size?: string,
+	variant?: string,
+	parameters?: Array<any>,
+	children: React.JSX.Element
 }
 
-export default function SubmitButton({ ...props }: Props) {
+export default function SubmitButton({ title, action, size, variant, parameters, children }: Props) {
 
-	const [ state, setState ] = useState("default")
+	const [ state, setState ] = useState("ready")
 
 	const clickAction = async () => {
 		if (state !== "loading") {
-			setState("loading")
-			await props.action(props?.parameters)
-			setState("default")
+			try {
+				setState("loading")
+				await action(parameters || [])
+				setState("ready")
+			}
+			catch (err: unknown) {
+				setState("ready")
+			}
 		}
 	}
 
 	return (
 
-		<button onClick={clickAction} className="">
-			
-		</button>
+		<>
+			{
+				state === "loading"
+					? <Button className="opacity-60" variant="surface">
+						<i
+							className="ti ti-loader"
+							style={{
+								fontSize: "medium",
+								animation: "spinner 1s linear infinite"
+							}}
+						></i>
+						{children}
+					</Button>
+					: <Button variant="surface" onClick={clickAction}>
+						{children}
+					</Button>
+			}
+		</>
 
 	)
 

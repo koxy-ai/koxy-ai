@@ -28,7 +28,7 @@ export default function RootLayout({ children }: Children) {
         <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet" />
       </head>
       <body >
-        <Theme appearance="dark" radius="large" accentColor="purple" scaling="95%">
+        <Theme appearance="dark" radius="large" accentColor="pink" scaling="95%">
           <Alert />
           {children}
           <Toaster />

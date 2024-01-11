@@ -24,13 +24,19 @@ body {
 }
 
 .gradient {
-	background: rgb(124,58,237);
-	background: linear-gradient(90deg, rgba(124,58,237,1) 0%, rgba(168,85,247,1) 100%); 
+	background: rgb(236,72,153);
+	background: linear-gradient(90deg, rgba(236,72,153,1) 0%, rgba(168,85,247,1) 100%); 
 }
 
 .gradient2 {
 	background: rgb(124,58,237);
-	background: linear-gradient(90deg, rgba(255, 255, 255,.03) 0%, rgba(0, 0, 0) 100%); 
+	background: linear-gradient(120deg, rgba(255, 255, 255,.05) 0%, rgba(0, 0, 0) 100%); 
+}
+
+.textGradient {
+	background: -webkit-linear-gradient(#eee, #999);
+	-webkit-background-clip: text;
+	-webkit-text-fill-color: transparent;
 }
 
 .sidebar {
@@ -194,4 +200,27 @@ table {
 
 #readmeContainer td {
 	@apply p-2 text-center border-1 border-[var(--gray-a3)];
+}
+
+/* Pricing plan */
+
+.pricingFeatureSection {
+	@apply flex gap-6 sm:flex-col lg:flex-row;
+}
+
+.planContainer {
+	@apply p-6 border-1 gap-4 border-[var(--gray-a6)] rounded-md lg:min-w-[42rem] flex gradient2 flex-col;
+}
+
+.powerButton {
+	@apply flex items-center justify-center p-2 pl-4 pr-4 opacity-90 hover:opacity-100 gradient mb-2 rounded-md border-1 border-[var(--gray-a6)] hover:border-[var(--gray-a9)];
+}
+
+@keyframes spinner {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }

@@ -87,7 +87,7 @@ function Page({ workspace, user }: PageProps) {
 					<div className="flex flex-col w-full gap-2 truncate mr-3">
 						<div className="flex items-center">
 							<div 
-								className="m-2 mr-4 mb-4 p-2 w-14 h-14 group-hover:border-purple-400 transition-all border-1 border-[var(--gray-a5)] bg-[#35353535] rounded-xl rotate-[50deg] flex items-center justify-center"
+								className="m-2 mr-4 mb-4 p-2 w-14 h-14 group-hover:border-pink-400 transition-all border-1 border-[var(--gray-a5)] bg-[#35353535] rounded-xl rotate-[50deg] flex items-center justify-center"
 							>
 								<img
 									src="https://huggingface.co/datasets/huggingface/brand-assets/resolve/main/hf-logo.png"
@@ -95,11 +95,11 @@ function Page({ workspace, user }: PageProps) {
 								/>
 							</div>
 							<div className="flex flex-col gap-3">
-								<div className="w-6 h-6 opacity-80 group-hover:border-purple-400 transition-all duration-[300ms] border-1 border-[var(--gray-a4)] bg-[#31313131] rounded-md rotate-[36deg]"></div>
-								<div className="w-6 h-6 opacity-80 group-hover:border-purple-400 transition-all duration-[500ms] border-1 border-[var(--gray-a4)] bg-[#31313131] rounded-md rotate-[15deg]"></div>
+								<div className="w-6 h-6 opacity-80 group-hover:border-pink-400 transition-all duration-[300ms] border-1 border-[var(--gray-a4)] bg-[#31313131] rounded-md rotate-[36deg]"></div>
+								<div className="w-6 h-6 opacity-80 group-hover:border-pink-400 transition-all duration-[500ms] border-1 border-[var(--gray-a4)] bg-[#31313131] rounded-md rotate-[15deg]"></div>
 							</div>
 							<div className="flex flex-col gap-3 ml-3">
-								<div className="w-6 h-6 opacity-70 group-hover:border-purple-400 transition-all duration-[700ms] border-1 border-[var(--gray-a4)] bg-[#31313131] rounded-md rotate-[50deg]"></div>
+								<div className="w-6 h-6 opacity-70 group-hover:border-pink-400 transition-all duration-[700ms] border-1 border-[var(--gray-a4)] bg-[#31313131] rounded-md rotate-[50deg]"></div>
 							</div>
 						</div>
 						<div className="flex items-center gap-2">
@@ -190,11 +190,11 @@ function ModelPage({ model, workspace }: any) {
 					<div className="flex gap-3 flex-col">
 						<div className="flex items-center gap-1 p-1 bg-[#35353535] pl-2 pr-2 rounded-md max-w-max">
 							<div className="text-xs text-gray-400">Usage price: </div>
-							<div className="text-xs text-purple-400">Free</div>
+							<div className="text-xs text-pink-400">Free</div>
 						</div>
 						<div className="flex items-center gap-1 p-1 bg-[#35353535] pl-2 pr-2 rounded-md max-w-max">
 							<div className="text-xs text-gray-400">Required plan: </div>
-							<div className="text-xs text-purple-400">Basic</div>
+							<div className="text-xs text-pink-400">Basic</div>
 						</div>
 					</div>
 				</div>
@@ -212,7 +212,7 @@ function CanDeploy({ check }: { check: Boolean }) {
 
 	if (check) {
 		return (
-			<div className="flex items-center gap-2 text-purple-500 text-xs mb-4">
+			<div className="flex items-center gap-2 text-pink-500 text-xs mb-4">
 				<Icon id="circle-check-filled" />
 				You can deploy this model
 			</div>
