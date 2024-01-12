@@ -181,8 +181,21 @@ function FunctionsBody({ functions }: { functions: Array<FunctionType> | null })
 
 function LoadingFunctions() {
 	return (
-		<div className="animate-pulse">
-			Loading functions
+		<div className="flex flex-col gap-4">
+			<div className="flex items-center">
+				<TextField.Root>
+					<TextField.Slot>
+						<Icon id="search" />
+					</TextField.Slot>
+					<TextField.Input id="functionsSearch" placeholder="Search function by name" />
+				</TextField.Root>
+			</div>
+
+			<div className="flex items-center gap-6 grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 animate-pulse mt-2">
+				<div className="p-6 h-24 min-w-[10rem] bg-[#31313131] rounded-xl"></div>
+				<div className="p-6 h-24 min-w-[10rem] bg-[#31313131] rounded-xl"></div>
+			</div>
+
 		</div>
 	)
 }
