@@ -13,7 +13,7 @@ export default async function listFunctions(workspaceId: string) {
 
 	const { error, data } = await supabase
 		.from("functions")
-		.select("id, name, created_at, workspace_id")
+		.select("id, name, created_at, workspace_id, status")
 		.eq("workspace_id", workspaceId)
 
 	return error || data

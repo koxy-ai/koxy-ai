@@ -97,25 +97,23 @@ export default function SideBar({ workspace, active, actions }: Props) {
                     </button>
                 ))}
                 <div className="h-full"></div>
-                <button
-                    className="sidebarButton"
-                >
-                    <div
-                        className="sidebarButtonIcon"
-                    >
-                        <Icon id="rocket" />
+                <button className="sidebarButton">
+                    <div className="flex items-center gap-2 w-full">
+                        <div className="sidebarButtonIcon">
+                            <Icon id="slash" />
+                        </div>
+                        <Text>Commands</Text>
                     </div>
-                    Getting started
+                    <Badge color="gray" variant="surface">/</Badge>
                 </button>
-                <button
-                    className="sidebarButton"
-                >
-                    <div
-                        className="sidebarButtonIcon"
-                    >
-                        <Icon id="book" />
+                <button className="sidebarButton">
+                    <div className="flex items-center gap-2 w-full">
+                        <div className="sidebarButtonIcon">
+                            <Icon id="book" />
+                        </div>
+                        <Text>Documentation</Text>
                     </div>
-                    Documentation
+                    <Badge color="gray" variant="surface">ctrl+d</Badge>
                 </button>
             </div>
 

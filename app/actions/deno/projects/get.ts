@@ -4,14 +4,21 @@ import getRequired from "@/scripts/deno/getRequired"
 import supabaseServer from "@/app/actions/supabaseServer"
 import type Deployment from "@/scripts/deployments/type"
 
-export default async function getProject(id: string): Deployment | null {
+export type FuncRes = {
+	name: string,
+	id: string,
+	status: string,
+	deployments: Array<Deployment>
+}
+
+export default async function getProject(id: string): FuncRes | null {
 
 	const supabase = supabaseServer()
 	const { api, org, token, headers } = getRequired()
 
 	const { data, error } = await supabase
 		.from("functions")
-		.select("id, name")
+		.select("id, name, status")
 		.eq("id", id)
 
 	if (error || !data) {
@@ -24,10 +31,14 @@ export default async function getProject(id: string): Deployment | null {
 	}
 
 	try {
-		const res = await fetch(`${api}/projects/${func.id}/deployments?limit=1&sort=created_at`)
-		const latestDeployment: Deployment = await (res.json())[0] as Deployment
-		latestDeployment.name = func.name
-		return latestDeployment
+		const res = await fetch(`${api}/projects/${func.id}/deployments?limit=1&sort=created_at`, {headers})
+		let deployments: Array<Deployment> = await res.json()
+		return {
+			name: func.name,
+			id: func.id,
+			status: func.status,
+			deployments
+		}
 	}
 
 	catch(err: unknown) {

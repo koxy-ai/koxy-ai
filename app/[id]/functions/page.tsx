@@ -13,7 +13,7 @@ import PricingPlan from "@/components/layout/PricingPlan"
 import FirstTimeFeature from "@/components/layout/FirstTimeFeature"
 import Card from "@/components/layout/Card"
 
-import { Button, Heading, Text, TextField } from "@radix-ui/themes"
+import { Button, Heading, Text, TextField, DropdownMenu } from "@radix-ui/themes"
 
 import listFunctions from "@/app/actions/workspaces/listFunctions"
 import isArray from "@/scripts/isArray"
@@ -146,6 +146,8 @@ function FunctionsBody({ functions }: { functions: Array<FunctionType> | null })
 
 	}
 
+	
+
 	return (
 		<div className="flex flex-col gap-4">
 			<div className="flex items-center">
@@ -163,12 +165,17 @@ function FunctionsBody({ functions }: { functions: Array<FunctionType> | null })
 						key={functionItem.id}
 						className="functionItem"
 						id={functionItem.name.replace(" ", "-").toLowerCase()}
-						onClick={() => router.push(`functions/${functionItem.id}`)}
 					>
 						<Card
 							title={functionItem.name}
 							info={functionItem.id}
-							icon="code"
+							icon={functionItem.status === "progressing" ? "loader" : "code"}
+							action={() => router.push(`functions/${functionItem.id}`)}
+							Options={() => {
+								return (
+									<FuncOptions functionItem={functionItem} />
+								)
+							}}
 						/>
 					</div>
 				))}
@@ -177,6 +184,34 @@ function FunctionsBody({ functions }: { functions: Array<FunctionType> | null })
 		</div>
 	)
 
+}
+
+const FuncOptions = ({ functionItem }: { functionItem: FunctionType }) => {
+
+	return (
+		<>
+			<DropdownMenu.Label>{functionItem.name}</DropdownMenu.Label>
+			<Option title="Overview" path={functionItem.id} />
+			<Option title="Deployments" path={`${functionItem.id}/deployments`} />
+			<DropdownMenu.Item>Logs</DropdownMenu.Item>
+			<DropdownMenu.Separator />
+			<Option title="Settings" path={`${functionItem.id}/settings`} />
+			<DropdownMenu.Item color="red">Delete</DropdownMenu.Item>
+		</>
+	)
+}
+
+const Option = ({ title, path }: { title: string, path: string }) => {
+	
+	const router = useRouter()
+
+	const pushLink = () => {
+		router.push(`functions/${path}`)
+	}
+
+	return (
+		<DropdownMenu.Item onClick={pushLink}>{title}</DropdownMenu.Item>
+	)
 }
 
 function LoadingFunctions() {

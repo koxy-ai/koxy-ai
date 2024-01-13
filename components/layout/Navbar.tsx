@@ -143,8 +143,8 @@ export function InterfaceNav({ id, active }: Props) {
                 <div className="w-full h-10 pt-3 flex items-center justify-center">
                     <div className="navLogo" onClick={() => { router.push(`/${id}`) }}>
                         <Image
-                            width={28}
-                            height={28}
+                            width={27}
+                            height={27}
                             src="/koxy-logo.png"
                             alt="Koxy AI Logo"
                         />
