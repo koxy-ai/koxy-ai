@@ -20,7 +20,7 @@ export default function Card({ id, classes, title, info, icon, action, Options }
 			id={id || `card-${Date.now()}`}
 			className={`${classes} flex items-center group p-4 border-1 border-[var(--gray-a6)] transition-all rounded-xl hover:border-pink-500/50 cursor-pointer hover:bg-pink-500/5 relative`}
 		>
-			<div onClick={action} className="flex flex-col gap-1">
+			<div onClick={() => action()} className="flex flex-col gap-1">
 				<div className="w-9 h-9 group-hover:border-pink-500/50 transition-all duration-500 border-1 border-[var(--gray-a6)] gradient2 rounded-md flex items-center justify-center relative">
 					<Text size="6" color="pink">
 						{title[0]}
@@ -29,7 +29,7 @@ export default function Card({ id, classes, title, info, icon, action, Options }
 						<Icon id={icon} size="12px" />
 					</div>
 				</div>
-				<Text className="hover:underline" mt="1" align="start">{title}</Text>
+				<Text className="hover:underline" mt="1" align="left">{title}</Text>
 				<Text size="1" color="gray">{info}</Text>
 			</div>
 

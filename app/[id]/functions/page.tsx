@@ -25,7 +25,8 @@ const Init = ({ user }: Props) => ( <WorkspacePage user={user} Comp={Page} /> )
 type FunctionType = {
 	id: string,
 	name: string,
-	created_at: string
+	created_at: string,
+	status: string
 }
 
 function Page({ workspace, user }: PageProps) {

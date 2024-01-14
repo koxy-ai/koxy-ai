@@ -4,7 +4,7 @@ import getRequired from "@/scripts/deno/getRequired"
 import supabaseServer from "@/app/actions/supabaseServer"
 import type Deployment from "@/scripts/deployments/type"
 
-type DeploymentOptions = {
+export type DeploymentOptions = {
 	entryPointUrl: string,
 	assets: Object,
 	envVars: Object,
@@ -24,7 +24,7 @@ type Owner = {
 	avatar: string
 }
 
-export default async function createDeployment(projectId: string, owner: Owner, options: any): null | Deployment {
+export default async function createDeployment(projectId: string, owner: Owner, options: any): Promise<null | Deployment> {
 
 	const { api, org, token, headers } = getRequired()
 	const supabase = supabaseServer()
@@ -64,7 +64,7 @@ export default async function createDeployment(projectId: string, owner: Owner, 
 		return deployment
 
 	}
-	catch(err: unkown) {
+	catch(err: unknown) {
 		return null
 	}
 

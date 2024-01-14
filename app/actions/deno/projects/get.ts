@@ -11,7 +11,7 @@ export type FuncRes = {
 	deployments: Array<Deployment>
 }
 
-export default async function getProject(id: string): FuncRes | null {
+export default async function getProject(id: string): Promise<FuncRes | null> {
 
 	const supabase = supabaseServer()
 	const { api, org, token, headers } = getRequired()

@@ -15,6 +15,7 @@ export default async function listFunctions(workspaceId: string) {
 		.from("functions")
 		.select("id, name, created_at, workspace_id, status")
 		.eq("workspace_id", workspaceId)
+		.order("created_at", { ascending: false })
 
 	return error || data
 

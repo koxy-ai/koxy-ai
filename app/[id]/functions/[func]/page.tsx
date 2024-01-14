@@ -5,8 +5,9 @@ import { useEffect, useState } from "react"
 import Auth, { type Props } from "@/app/auth/Auth"
 import WorkspacePage, { type PageProps } from "@/app/[id]/WorkspacePage"
 import WorkspaceLayout, { type Config } from "@/components/layout/WorkspaceLayout"
-import actions from "./sidebarActions"
+import createActions from "./sidebarActions"
 import pageInfo from "@/scripts/pageInfo"
+import { type User } from "@supabase/auth-helpers-nextjs"
 
 import { Button, Text, Heading, Badge, Dialog, Link, IconButton, DropdownMenu } from "@radix-ui/themes"
 import Icon from "@/components/Icon"
@@ -18,6 +19,7 @@ import type Deployment from "@/scripts/deployments/type"
 import getFunction, { type FuncRes } from "@/app/actions/deno/projects/get"
 import createDeployment from "@/app/actions/deno/deployments/create"
 import Once from "@/scripts/once"
+import { firstDeployment } from "@/scripts/deployments/buildInfo"
 
 const FunctionPage = () => ( <Auth Comp={Init} /> )
 const Init = ({ user }: Props) => ( <WorkspacePage user={user} Comp={Page} /> )
@@ -26,23 +28,20 @@ const createOnce = new Once()
 
 function Page({ workspace, user }: PageProps) {
 
+	const router = useRouter()
+	const functionId = usePathname().split("/")[3]
+	const [ func, setFunc ] = useState<null | FuncRes | false>(false)
+
 	const config: Config = {
 		workspace,
 		navbar: {
 			active: "functions"
 		},
 		sidebar: {
-			actions,
+			actions: createActions(functionId),
 			active: "function-overview"
 		}
 	}
-
-	pageInfo(`${workspace.name} - Edge functions`)
-	const router = useRouter()
-	const path = usePathname().split("/")
-	const functionId = path[3]
-
-	const [ func, setFunc ] = useState<null | Deployment | false>(false)
 
 	useEffect(() => {
 		if (!func) {
@@ -55,46 +54,26 @@ function Page({ workspace, user }: PageProps) {
 	}
 
 	if (func === null) {
-		return <>Error</>
+		return <Error config={config} />
 	}
 
 	if (func === false) {
-		return (
-			<WorkspaceLayout config={config}>
-				<main className="innerMain p-6">
-					Loading
-				</main>
-			</WorkspaceLayout>
-		)
+		return <Loading config={config} />
 	}
 
+	pageInfo(`${func.name} - Overview`)
+
 	if (func?.status === "progressing") {
-
-		const FirstDeploymentOptions = {
-			entryPointUrl: "main.ts",
-			assets: {
-				"main.ts": {
-					kind: "file",
-					content: `Deno.serve(() => new Response("Hello, World!"));`,
-					encoding: "utf-8"
-				}
-			},
-			envVars: {},
-			description: `First deployment in ${func?.name}`
-		}
-
-		const owner = {
-			name: user?.user_metadata?.full_name || user?.user_metadata?.user_name,
-			avatar: user?.user_metadata?.avatar_url
-		}
+		const { options, owner } = firstDeployment({
+			func, user: user as User
+		})
 
 		createOnce
 			.setAction(async () => {
-				const data: Deployment | null = await createDeployment(func?.id, owner, FirstDeploymentOptions)
+				const data: Deployment | null = await createDeployment(func?.id, owner, options)
 				getFunction(functionId).then( (data: FuncRes | null) => setFunc(data) )
 			})
 			.execute()
-
 	}
 
 	return (
@@ -258,8 +237,10 @@ function DeployedBy({ func }: { func: FuncRes }) {
 		return null
 	}
 
-	const avatar = deployment.description.split("::koxy::")[2]
-	const ownerName = deployment.description.split("::koxy::")[1]
+	const description = deployment.description || ""
+
+	const avatar = description.split("::koxy::")[2]
+	const ownerName = description.split("::koxy::")[1]
 
 	return (
 		<div className="flex flex-col gap-2">
@@ -277,7 +258,8 @@ function DeployedBy({ func }: { func: FuncRes }) {
 
 function Domains({ func }: { func: FuncRes }) {
 	
-	const deployment = func?.deployments[0]
+	const deployment: Deployment = func?.deployments[0]
+	const domains: Array<string> = deployment.domains || []
 
 	if (!deployment || deployment.status !== "success") {
 		return null
@@ -287,7 +269,7 @@ function Domains({ func }: { func: FuncRes }) {
 		<div className="flex flex-col gap-2">
 			<Text color="gray" size="2">Domains</Text>
 			<div className="flex flex-col gap-1">
-				{(deployment.domains || []).map(domain => (
+				{domains.map(domain => (
 					<div key={`${domain}-${Math.random()}`}>
 						<Link href={`https://${domain}`} target="_blank" color="gray" size="2">
 							<Icon id="link" size="small" /> {domain}
@@ -319,7 +301,7 @@ function WaitingDeployment() {
 					>
 						<DashedBorders />
 					</div>
-					<Icon id="cloud" className="spinner" size="larger" />
+					<Icon id="cloud" size="larger" />
 				</div>
 				<Heading className="textGradient" mt="4">Deploying function...</Heading>
 				<div className="max-w-[70%] flex flex-col items-center justify-center">
@@ -332,6 +314,26 @@ function WaitingDeployment() {
 				</div>
 			</div>
 		</main>
+	)
+}
+
+function Error({ config }: { config: Config }) {
+	return (
+		<WorkspaceLayout config={config}>
+			<main className="innerMain p-6">
+				Error while getting function data
+			</main>
+		</WorkspaceLayout>
+	)
+}
+
+function Loading({ config }: { config: Config }) {
+	return (
+		<WorkspaceLayout config={config}>
+			<main className="innerMain p-6">
+				Loading
+			</main>
+		</WorkspaceLayout>
 	)
 }
 

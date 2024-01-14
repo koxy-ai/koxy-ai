@@ -18,16 +18,22 @@ class Once {
 		return (this.state === "ready") ? true : false
 	}
 
-	async execute(force: Boolean, parameters?: any) {
-		if (force) {
-			const res = await this.action(parameters || {})
+	async execute(options?: { force?: Boolean, parameters?: any }) {
+		options = options || {}
+
+		if (!this.action) {
+			return null
+		}
+
+		if (options.force) {
+			const res: any = await this.action(options.parameters || {})
 			return res
 		}
 
 		const check = this.isState()
 		if (check) {
 			this.state = "expired"
-			const res = await this.action(parameters || {})
+			const res: any = await this.action(options.parameters || {})
 			return res
 		}
 

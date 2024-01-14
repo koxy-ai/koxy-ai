@@ -6,7 +6,7 @@ import { Button } from "@radix-ui/themes"
 type Props = {
 	title?: string,
 	action: Function,
-	size?: string,
+	size?: any,
 	variant?: string,
 	parameters?: Array<any>,
 	children: React.JSX.Element
@@ -34,7 +34,7 @@ export default function SubmitButton({ title, action, size, variant, parameters,
 		<>
 			{
 				state === "loading"
-					? <Button className="opacity-60" variant="surface">
+					? <Button size={size || "2"} className="opacity-60" variant="surface">
 						<i
 							className="ti ti-loader"
 							style={{
@@ -44,7 +44,7 @@ export default function SubmitButton({ title, action, size, variant, parameters,
 						></i>
 						{children}
 					</Button>
-					: <Button variant="surface" onClick={clickAction}>
+					: <Button size={size || "2"} variant="surface" onClick={clickAction}>
 						{children}
 					</Button>
 			}

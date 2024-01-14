@@ -1,4 +1,4 @@
-export default type Deployment = {
+type Deployment = {
 	name: string,
 	id: string,
 	projectId: string,
@@ -9,3 +9,5 @@ export default type Deployment = {
 	createdAt: string,
 	updatedAt: string
 }
+
+export default Deployment
