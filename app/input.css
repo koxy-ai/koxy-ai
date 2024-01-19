@@ -239,3 +239,7 @@ table {
 	backdrop-filter: blur(15px);
 	-webkit-backdrop-filter: blur(5px);
 }
+
+.inputDefault {
+	@apply bg-[#29292929] border-1 border-[var(--gray-a5)] p-1 pl-3 text-sm rounded-md outline-0 focus:border-white/30 transition-all;
+}

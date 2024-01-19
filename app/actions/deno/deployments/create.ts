@@ -24,7 +24,7 @@ type Owner = {
 	avatar: string
 }
 
-export default async function createDeployment(projectId: string, owner: Owner, options: any): Promise<null | Deployment> {
+export default async function createDeployment(projectId: string, teamId: string, owner: Owner, options: any): Promise<null | Deployment> {
 
 	const { api, org, token, headers } = getRequired()
 	const supabase = supabaseServer()
@@ -60,7 +60,16 @@ export default async function createDeployment(projectId: string, owner: Owner, 
 		if (!check) {
 			return null
 		}
-		
+
+		await supabase
+			.from("code")
+			.insert({
+				team_id: teamId,
+				payload: options,
+				deployment_id: deployment?.id,
+				function_id: projectId
+			})
+
 		return deployment
 
 	}

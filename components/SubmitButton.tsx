@@ -7,12 +7,13 @@ type Props = {
 	title?: string,
 	action: Function,
 	size?: any,
-	variant?: string,
+	color?: any,
+	variant?: any,
 	parameters?: Array<any>,
 	children: React.JSX.Element
 }
 
-export default function SubmitButton({ title, action, size, variant, parameters, children }: Props) {
+export default function SubmitButton({ title, action, size, color, variant, parameters, children }: Props) {
 
 	const [ state, setState ] = useState("ready")
 
@@ -34,7 +35,7 @@ export default function SubmitButton({ title, action, size, variant, parameters,
 		<>
 			{
 				state === "loading"
-					? <Button size={size || "2"} className="opacity-60" variant="surface">
+					? <Button size={size || "2"} color={color || "pink"} className="opacity-60" variant={variant || "surface"}>
 						<i
 							className="ti ti-loader"
 							style={{
@@ -44,7 +45,7 @@ export default function SubmitButton({ title, action, size, variant, parameters,
 						></i>
 						{children}
 					</Button>
-					: <Button size={size || "2"} variant="surface" onClick={clickAction}>
+					: <Button size={size || "2"} color={color || "pink"} variant={variant || "surface"} onClick={clickAction}>
 						{children}
 					</Button>
 			}

@@ -19,7 +19,7 @@ import type Deployment from "@/scripts/deployments/type"
 import getFunction, { type FuncRes } from "@/app/actions/deno/projects/get"
 import createDeployment from "@/app/actions/deno/deployments/create"
 import Once from "@/scripts/once"
-import { firstDeployment } from "@/scripts/deployments/buildInfo"
+import timeAgo from "@/scripts/timeAgo"
 
 const FunctionPage = () => ( <Auth Comp={Init} /> )
 const Init = ({ user }: Props) => ( <WorkspacePage user={user} Comp={Page} /> )
@@ -49,10 +49,6 @@ function Page({ workspace, user }: PageProps) {
 		}
 	}, [])
 
-	const updateFunc = () => {
-		getFunction(functionId).then( (data: FuncRes | null) => setFunc(data) )
-	}
-
 	if (func === null) {
 		return <Error config={config} />
 	}
@@ -68,11 +64,39 @@ function Page({ workspace, user }: PageProps) {
 			func, user: user as User
 		})
 
+		const checkAgain = async () => {
+			const data: FuncRes | null = await getFunction(functionId)
+			if (data) {
+				setFunc(data)
+				const deployment = (data.deployments || [])[0]
+				if (!deployment) {
+					return null
+				}
+				if (deployment.status === "pending") {
+					checkAgain()
+				}
+			}
+		}
+
 		createOnce
 			.setAction(async () => {
-				const data: Deployment | null = await createDeployment(func?.id, owner, options)
-				getFunction(functionId).then( (data: FuncRes | null) => setFunc(data) )
+				const data: Deployment | null = await createDeployment(func?.id, workspace?.team_id, owner, options)
+				getFunction(functionId).then( (data: FuncRes | null) => {
+					setFunc(data)
+					if (data) {
+						const deployment = (data.deployments || [])[0]
+						if (!deployment) {
+							return null
+						}
+						if (deployment.status === "pending") {
+							setTimeout(() => {
+								checkAgain()
+							}, 1000)
+						}
+					}
+				})
 			})
+			.setId(func?.id)
 			.execute()
 	}
 
@@ -80,15 +104,15 @@ function Page({ workspace, user }: PageProps) {
 		<WorkspaceLayout config={config}>
 			
 			<main className="innerMain">
-				
-				<div className="p-6 flex items-center">
-					
+
+				<div className="p-6 flex items-center border-b-1 border-[var(--gray-a4)]">
+
 					<div className="flex flex-col gap-3 w-full">
 						<div className="flex items-center gap-4 text-gray-500">
 							<Button onClick={() => router.push(`/${workspace.id}/functions`)} color="gray" variant="ghost">
 								<div className="flex items-center gap-2">
 									<div className="w-5 h-5 flex items-center justify-center border-1 border-pink-500/50 bg-pink-500/5 rounded-md">
-										<Icon id="code" size="12px" />
+										<Icon id="cloud-code" size="12px" />
 									</div>
 									Edge functions
 								</div>
@@ -109,9 +133,7 @@ function Page({ workspace, user }: PageProps) {
 
 				</div>
 
-				<div id="updateFuncData" onClick={updateFunc}></div>
-
-				<div className="p-6 pt-3">
+				<div className="flex w-full p-6 gap-5">
 					<Deployment func={func} />
 				</div>
 
@@ -124,13 +146,13 @@ function Page({ workspace, user }: PageProps) {
 
 function HeadActions({ func }: { func: FuncRes }) {
 
-	if (func.status === "progressing") {
+	if (func?.status === "progressing") {
 		return null
 	}
 
 	return (
 		<>
-			<Button variant="surface" color="gray">
+			<Button variant="soft" color="gray" highContrast>
 				<Icon id="brand-github-filled" />
 				Connect Github
 			</Button>
@@ -146,9 +168,7 @@ function HeadActions({ func }: { func: FuncRes }) {
 function Deployment({ func }: { func: FuncRes }) {
 
 	if (func?.status === "progressing") {
-		return (
-			<WaitingDeployment />
-		)
+		return <WaitingDeployment />
 	}
 
 	if (!func?.deployments || func?.deployments.length < 1) {
@@ -156,27 +176,21 @@ function Deployment({ func }: { func: FuncRes }) {
 	}
 
 	const deployment: Deployment = func?.deployments[0]
-	const updatedAt = String(deployment?.updatedAt || "Pending").substring(0, 10)
-	const description = String(deployment.description || "Waiting for deployment::koxy::").split("::koxy::")[0]
+	const updatedAt = String(deployment?.updatedAt || Date.now())
+	const description = String(deployment.description || "Waiting for deployment, please wait a second::koxy::").split("::koxy::")[0]
+	const date = timeAgo(updatedAt)
 
 	const color = (deployment.status === "success") ? "text-green-500"
 		: (deployment.status === "pending") ? "text-orange-500"
 		: "text-red-500"
 
-	const updateFunc = async () => {
-		const elm = document.getElementById("updateFuncData")
-		if (elm) {
-			elm.click()
-		}
-	}
-
 	return (
-		<div className="p-6 w-full border-1 border-[var(--gray-a6)] rounded-md bg-[#050505] relative">
+		<div className="p-5 w-full border-1 border-[var(--gray-a6)] rounded-md bg-[#050505] relative">
 			<Badge color="gray">{deployment.id}</Badge>
-			<Heading mt="3" mb="2" size="5">Latest deployment</Heading>
+			<Heading mt="4" mb="3" size="5">Latest deployment</Heading>
 			
 			<div className="flex items-center gap-1 mb-5">
-				<Text size="2" color="gray">Updated in {updatedAt}</Text>
+				<DeployedBy func={func} />
 				<div className="flex items-center justify-center opacity-50">
 					<Icon id="point-filled" size="small" />
 				</div>
@@ -184,25 +198,27 @@ function Deployment({ func }: { func: FuncRes }) {
 			</div>
 			<div className="border-t-1 w-full border-[var(--gray-a5)] mb-5"></div>
 
-			<div className="flex gap-12">
+			<div className="flex gap-8">
 				<div className="flex flex-col gap-2">
-					<Text color="gray" size="2" ml="1">Status</Text>
 					<Text className="flex items-center">
 						<div className={`${color} flex items-center`}>
 							<Icon id="point-filled" size="large" />
 						</div>
-						<Text size="2">{deployment?.status}</Text>
+						<Text size="2" color="gray">{deployment?.status}</Text>
 					</Text>
 				</div>
-
-				<DeployedBy func={func} />
+				<div className="flex flex-col gap-2">
+					<Text size="2" color="gray">
+						<div className="flex items-center gap-1 min-w-max">
+							<Icon id="clock" />
+							{date}
+						</div>
+					</Text>
+				</div>
 				<Domains func={func} />
 			</div>
 
 			<div className="absolute top-6 right-6 flex items-center gap-6">
-				<Button onClick={updateFunc} color="gray" variant="ghost">
-					<Icon id="refresh" /> Refresh
-				</Button>
 				<DropdownMenu.Root>
 					<DropdownMenu.Trigger>
 						<IconButton color="gray" variant="ghost">
@@ -238,19 +254,13 @@ function DeployedBy({ func }: { func: FuncRes }) {
 	}
 
 	const description = deployment.description || ""
-
 	const avatar = description.split("::koxy::")[2]
 	const ownerName = description.split("::koxy::")[1]
 
 	return (
-		<div className="flex flex-col gap-2">
-			<Text color="gray" size="2">Deployed by</Text>
-			<div className="flex flex-col gap-1">
-				<div className="flex items-center gap-2">
-					<img src={avatar} className="w-6 h-6 object-cover rounded-[99rem]" />
-					<Text size="2" color="gray">{ownerName}</Text>
-				</div>
-			</div>
+		<div className="flex items-center gap-2">
+			<img src={avatar} className="w-6 h-6 object-cover rounded-[99rem] border-1 border-white/30" />
+			<Text size="2" color="gray" className="truncate">{ownerName}</Text>
 		</div>
 	)
 
@@ -267,12 +277,12 @@ function Domains({ func }: { func: FuncRes }) {
 
 	return (
 		<div className="flex flex-col gap-2">
-			<Text color="gray" size="2">Domains</Text>
 			<div className="flex flex-col gap-1">
 				{domains.map(domain => (
 					<div key={`${domain}-${Math.random()}`}>
-						<Link href={`https://${domain}`} target="_blank" color="gray" size="2">
-							<Icon id="link" size="small" /> {domain}
+						<Link className="flex items-center gap-1" href={`https://${domain}`} target="_blank" color="gray" size="2">
+							<Icon id="link" size="small" />
+							<div className="truncate max-w-[15rem]">{domain} {domain} {domain}</div>
 						</Link>
 					</div>
 				))}
@@ -283,37 +293,35 @@ function Domains({ func }: { func: FuncRes }) {
 
 function WaitingDeployment() {
 	return (
-		<main>
-			<div className="w-full flex flex-col items-center justify-center relative p-14 gap-2 group">
-				<DashedBorders />
+		<div className="w-full flex flex-col items-center justify-center relative p-14 gap-2 group">
+			<DashedBorders />
+			<div
+				className="flex items-center justify-center p-3.5 mb-3 rotate-[-20deg] group-hover:border-pink-500/70 transition-all relative text-pink-300 border-1 border-pink-500/50 bg-pink-500/10 rounded-md"
+				style={{
+					boxShadow: "0px 0px 50px 5px rgba(236,72,153, .07)",
+				}}
+			>
+				<div className="absolute top-0 left-0 w-full h-full animate-ping bg-pink-500/10 rounded-md border-1 border-pink-500/30"></div>
 				<div
-					className="flex items-center justify-center p-3.5 mb-3 rotate-[-20deg] group-hover:border-pink-500/70 transition-all relative text-pink-300 border-1 border-pink-500/50 bg-pink-500/10 rounded-md"
+					className="opacity-60"
 					style={{
-						boxShadow: "0px 0px 50px 5px rgba(236,72,153, .07)",
+						boxShadow: "0px 0px 50px 10px rgb(236,72,153)"
 					}}
 				>
-					<div className="absolute top-0 left-0 w-full h-full animate-ping bg-pink-500/10 rounded-md border-1 border-pink-500/30"></div>
-					<div
-						className="opacity-60"
-						style={{
-							boxShadow: "0px 0px 50px 10px rgb(236,72,153)"
-						}}
-					>
-						<DashedBorders />
-					</div>
-					<Icon id="cloud" size="larger" />
+					<DashedBorders />
 				</div>
-				<Heading className="textGradient" mt="4">Deploying function...</Heading>
-				<div className="max-w-[70%] flex flex-col items-center justify-center">
-					<Text size="3" color="gray" align="center">
-						Please wait a second while we deploy your function to the edge cloud
-					</Text>
-					<Text size="3" color="gray" align="center">
-						(No need to refresh the page)
-					</Text>
-				</div>
+				<Icon id="cloud" size="larger" />
 			</div>
-		</main>
+			<Heading className="textGradient" mt="4">Deploying function...</Heading>
+			<div className="max-w-[70%] flex flex-col items-center justify-center">
+				<Text size="3" color="gray" align="center">
+					Please wait a second while we deploy your function to the edge cloud
+				</Text>
+				<Text size="3" color="gray" align="center">
+					(No need to refresh the page)
+				</Text>
+			</div>
+		</div>
 	)
 }
 

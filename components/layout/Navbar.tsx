@@ -68,7 +68,7 @@ const navButtons: Array<NavAction | NavLine> = [
     {
         id: "functions",
         tooltip: "Edge Functions",
-        icon: "code",
+        icon: "cloud-code",
         path: "functions"
     },
     {

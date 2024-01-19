@@ -2,7 +2,7 @@
 
 import getWorkspace from "./workspace"
 import is from "@/scripts/is"
-import { useEffect, useState } from "react"
+import { useEffect, useState, type ReactNode } from "react"
 import { type User } from "@supabase/auth-helpers-nextjs"
 import { useRouter, usePathname } from "next/navigation"
 
@@ -20,7 +20,7 @@ const memWorkspace: {value: any} = {
 	value: null
 }
 
-export default function WorkspacePage({ user, Comp }: Props) {
+export default function WorkspacePage({ Comp }: { Comp: any }) {
 
 	const [ workspace, setWorkspace ]: any = useState(memWorkspace.value)
 	
@@ -49,6 +49,10 @@ export default function WorkspacePage({ user, Comp }: Props) {
 		return <></>
 	}
 
-	return <Comp workspace={workspace} user={user} />
+	return (
+		<>
+			<Comp workspace={workspace} />
+		</>
+	)
 
 }

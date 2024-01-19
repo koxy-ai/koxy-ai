@@ -86,7 +86,7 @@ export default function SideBar({ workspace, active, actions }: Props) {
                         onClick={() => {performAction(item.action)}}
                         key={item.id}
                         id={item.id}
-                        className="sidebarButton shadowText cursor-default"
+                        className="sidebarButton shadowText"
                     >
                         <div
                             className="sidebarButtonIcon"
@@ -104,7 +104,7 @@ export default function SideBar({ workspace, active, actions }: Props) {
                         </div>
                         <Text>Commands</Text>
                     </div>
-                    <Badge color="gray" variant="surface">/</Badge>
+                    <Badge color="gray" variant="soft">/</Badge>
                 </button>
                 <button className="sidebarButton">
                     <div className="flex items-center gap-2 w-full">
@@ -113,7 +113,8 @@ export default function SideBar({ workspace, active, actions }: Props) {
                         </div>
                         <Text>Documentation</Text>
                     </div>
-                    <Badge color="gray" variant="surface">ctrl+d</Badge>
+                    <Badge color="gray" variant="soft">ctrl</Badge>
+                    <Badge color="gray" variant="soft">d</Badge>
                 </button>
             </div>
 
@@ -122,9 +123,13 @@ export default function SideBar({ workspace, active, actions }: Props) {
 
 }
 
+const memWorkspaces: { value: null | Array<any> } = {
+    value: null
+}
+
 function WorkspacesDialog({ workspace, router }: { workspace: any, router: any }) {
 
-    const [ workspaces, setWorkspaces ] = useState<null | Array<any>>(null)
+    const [ workspaces, setWorkspaces ] = useState<null | Array<any>>(memWorkspaces.value)
 
     const actions = [
         {
@@ -176,7 +181,10 @@ function WorkspacesDialog({ workspace, router }: { workspace: any, router: any }
     useEffect( () => {
         is([workspaces, null], () => {
             getAllWorkspaces().then( (data: any) => {
-                setWorkspaces(data)
+                if (data) {
+                    setWorkspaces(data)
+                    memWorkspaces.value = data
+                }
             })
         })
     }, [])

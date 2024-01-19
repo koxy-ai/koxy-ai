@@ -9,13 +9,16 @@ import WorkspaceLayout, { type Config } from "@/components/layout/WorkspaceLayou
 import createActions from "../sidebarActions"
 import pageInfo from "@/scripts/pageInfo"
 
-import { Text, Badge, Heading, Button } from "@radix-ui/themes"
+import { Text, Badge, Heading, Button, Dialog, TextField } from "@radix-ui/themes"
 import Icon from "@/components/Icon"
 import SubmitButton from "@/components/SubmitButton"
 
+import { toast } from "sonner"
 import getFunction, { type FuncRes } from "@/app/actions/deno/projects/get"
 import Once from "@/scripts/once"
 import is from "@/scripts/is"
+import deleteFunction from "@/app/actions/deno/projects/delete"
+import updateFunction from "@/app/actions/deno/projects/update"
 
 const Template = () => ( <Auth Comp={Init} /> )
 const Init = ({ user }: Props) => ( <WorkspacePage user={user} Comp={Page} /> )
@@ -65,6 +68,7 @@ function Page({ workspace, user }: PageProps) {
 
 function SettingsBody({ func }: { func: FuncRes }) {
 
+	const router = useRouter()
 	const [ active, setActive ] = useState<string>("Basic")
 
 	const buttons = [
@@ -73,7 +77,7 @@ function SettingsBody({ func }: { func: FuncRes }) {
 			color: "hover:bg-[#31313131]"
 		},
 		{
-			id: "Environment variables",
+			id: "Environment-variables",
 			color: "hover:bg-[#31313131]"
 		},
 		{
@@ -81,23 +85,28 @@ function SettingsBody({ func }: { func: FuncRes }) {
 			color: "hover:bg-[#31313131]"
 		},
 		{
-			id: "Danger zone",
+			id: "Danger-zone",
 			color: "hover:bg-red-500/10"
 		}
 	]
 
+	const changeWindow = (id: string) => {
+		setActive(id)
+		router.push(`#${id}`)
+	}
+
 	return (
-		<div className="flex gap-5">
-			<div className="min-w-[13rem] h-full flex flex-col gap-3 pt-3">
-				<div className="flex items-center gap-2 mb-3">
+		<div className="flex gap-5 relative">
+			<div className="min-w-[13rem] max-w-[13rem] h-full flex flex-col gap-3 pt-3 fixed">
+				<div className="flex items-center gap-2 mb-2">
 					<div className="w-6 h-6 flex items-center justify-center border-1 border-pink-500/50 rounded-md">
-						<Icon id="code" />
+						<Icon id="settings-code" />
 					</div>
 					<Text>{func.name}</Text>
 				</div>
 
 				{buttons.map(button => (
-					<div key={`${button.id}-button`} onClick={() => setActive(button.id)} >
+					<div key={`${button.id}-button`} onClick={() => changeWindow(button.id)} >
 						{(button.id === active)
 							? <ActiveTabButton title={button.id} color={button.color} />
 							: <TabButton title={button.id} color={button.color} />}
@@ -105,26 +114,43 @@ function SettingsBody({ func }: { func: FuncRes }) {
 				))}
 			</div>
 
-			<TabWindow func={func} isActive={("Basic" === active)}>
-				<BasicSettings func={func} />
-			</TabWindow>
+			<div className="w-full flex flex-col gap-6 ml-[14.5rem]">
+				<div onMouseOver={() => setActive("Basic")}>
+					<TabWindow func={func} id="Basic">
+						<BasicSettings func={func} />
+					</TabWindow>
+				</div>
 
-			<TabWindow func={func} isActive={("Environment variables" === active)}>
-				<EnvSettings func={func} />
-			</TabWindow>
+				<div onMouseOver={() => setActive("Environment-variables")}>
+					<TabWindow func={func} id="Environment-variables">
+						<EnvSettings func={func} />
+					</TabWindow>
+				</div>
+
+				<div onMouseOver={() => setActive("Domains")}>
+					<TabWindow func={func} id="Domains">
+						<DomainsSettings func={func} />
+					</TabWindow>
+				</div>
+
+				<div onMouseOver={() => setActive("Danger-zone")}>
+					<TabWindow func={func} id="Danger-zone">
+						<DangerSettings func={func} />
+					</TabWindow>
+				</div>
+
+			</div>
 
 		</div>
 	)
 }
 
-function TabWindow({ func, isActive, children }: { func: FuncRes, isActive: Boolean, children: React.JSX.Element }) {
-
-	if (!isActive) {
-		return null
-	}
+function TabWindow({ func, id, children }: { func: FuncRes, id: string, children: React.JSX.Element }) {
 
 	return (
-		<> {children} </>
+		<div id={id}>
+			{children} 
+		</div>
 	)
 
 }
@@ -133,7 +159,7 @@ function TabButton({ title, color }: { title: string, color: string }) {
 
 	return (
 		<button className={`p-1 w-full pl-2 pr-2 border-1 border-transparent ${color} rounded-md text-start flex items-center group`}>
-			<div className="w-full truncate text-sm">{title}</div>
+			<div className="w-full truncate text-sm">{title.replace("-", " ")}</div>
 			<div className="flex items-center justify-center scale-0 group-hover:scale-100 transition-all duration-300">
 				<Icon id="chevron-right" />
 			</div>
@@ -146,7 +172,7 @@ function ActiveTabButton({ title, color }: { title: string, color: string }) {
 
 	return (
 		<button className={`p-1 w-full pl-2 pr-2 border-1 border-[var(--gray-a4)] ${color} rounded-md text-start flex items-center group`}>
-			<div className="w-full truncate text-sm">{title}</div>
+			<div className="w-full truncate text-sm">{title.replace("-", " ")}</div>
 			<div className="flex items-center justify-center transition-all duration-300">
 				<Icon id="chevron-right" />
 			</div>
@@ -157,29 +183,56 @@ function ActiveTabButton({ title, color }: { title: string, color: string }) {
 
 function BasicSettings({ func }: { func: FuncRes }) {
 
+	const [ name, setName ] = useState<string>("")
+
+	const changeName = () => {
+		const elm = document.getElementById("updateFuncName") as HTMLInputElement
+		if (elm) {
+			const value = elm.value
+			setName(value || "")
+		}
+	}
+
+	const updateName = async () => {
+		const res = await updateFunction(func?.id, name)
+		const title = (res.success) ? "Updated function name" : `Something went wrong`
+		toast(title, {
+			description: res.message || "",
+			cancel: {
+				label: "Got it"
+			}
+		})
+		if (res.success) {
+			location.href = location.href
+		}
+	}
+
 	return (
-		<div className="w-full rounded-xl border-1 border-[var(--gray-a5)] p-6 relative">
+		<div className="w-full rounded-md border-1 border-white/20 p-6 relative">
 			<div className="flex items-center gap-3 mb-6">
 				<Badge color="gray">Settings</Badge>
 				<Text color="gray">/</Text>
 				<Badge color="gray">Basic</Badge>
 			</div>
 
-			<Heading mb="1" size="5">Function name</Heading>
-			<Text color="gray">
-				Change your function name. this will require you to update your function name in <Badge variant="surface">koxy-js</Badge>
-			</Text>
+			<div className="w-full flex flex-col">
+				<Text mb="1" size="4">Function name</Text>
+				<Text color="gray">
+					Change your function name. this will require you to update your function name in <Badge variant="surface">koxy-js</Badge>
+				</Text>
+			</div>
 
-			<input
-				className="bg-[#29292929] border-1 border-[var(--gray-a5)] w-full p-1.5 pl-3 text-sm rounded-md mt-5 outline-0 focus:border-white/30 transition-all"
-				placeholder="New function name..."
-			/>
-
-			<div className="mt-6 w-full flex items-center ">
+			<div className="mt-6 w-full flex items-center gap-4">
+				<input
+					id="updateFuncName"
+					onInput={() => changeName()}
+					className="inputDefault min-w-[40%]"
+					placeholder="New function name..."
+				/>
 				<SubmitButton
-					action={async () => {
-						await fetch("https://api.github.com")
-					}}
+					color="gray"
+					variant="soft"
+					action={updateName}
 					size="2"
 				>
 					<div>Save changes</div>
@@ -193,27 +246,181 @@ function BasicSettings({ func }: { func: FuncRes }) {
 function EnvSettings({ func }: { func: FuncRes }) {
 
 	return (
-		<div className="w-full rounded-xl border-1 border-[var(--gray-a5)] p-6 relative">
+		<div className="w-full rounded-md border-1 border-white/20 p-6 relative">
 			<div className="flex items-center gap-3 mb-6">
 				<Badge color="gray">Settings</Badge>
 				<Text color="gray">/</Text>
 				<Badge color="gray">Environment variables</Badge>
 			</div>
 
-			<Heading mb="1" size="5">Environment variables</Heading>
-			<Text color="gray">
-				Used to store sensetive information like API keys. can be accessed using <Badge variant="surface">Deno.env</Badge>
-			</Text>
+			<div className="flex items-center">
+				<div className="w-full flex flex-col">
+					<Text mb="1" size="4">Environment variables</Text>
+					<Text color="gray">
+						Used to store sensetive information like API keys.<br />
+					</Text>
+					<Text color="gray">
+						can be accessed using <Badge variant="surface">Deno.env</Badge>
+					</Text>
+				</div>
 
-			<div className="mt-6 w-full flex items-center ">
-				<SubmitButton
-					action={async () => {
-						await fetch("https://api.github.com")
-					}}
-					size="2"
-				>
-					<div>Update variables</div>
-				</SubmitButton>
+				<div className="flex items-center justify-end">
+					<Button
+						color="gray"
+						variant="soft"
+						size="2"
+					>
+						<div className="flex items-center gap-1">
+							Update variables
+						</div>
+					</Button>
+				</div>
+			</div>
+		</div>
+	)
+
+}
+
+function DomainsSettings({ func }: { func: FuncRes }) {
+
+	return (
+		<div className="w-full rounded-md border-1 border-white/20 p-6 relative">
+			<div className="flex items-center gap-3 mb-6">
+				<Badge color="gray">Settings</Badge>
+				<Text color="gray">/</Text>
+				<Badge color="gray">Domains</Badge>
+			</div>
+
+			<div className="flex items-center">
+				<div className="w-full flex flex-col">
+					<Text mb="1" size="4">Domains</Text>
+					<Text color="gray">
+						Associate a custom domain with this function
+					</Text>
+				</div>
+
+				<div className="flex items-center justify-end">
+					<SubmitButton
+						color="gray"
+						variant="soft"
+						action={async () => {
+							await fetch("https://api.github.com")
+						}}
+						size="2"
+					>
+						<div className="flex items-center gap-1">
+							Connect domain
+						</div>
+					</SubmitButton>
+				</div>
+			</div>
+		</div>
+	)
+
+}
+
+function DangerSettings({ func }: { func: FuncRes }) {
+
+	const [ name, setName ] = useState<string>("")
+	const workspaceId = usePathname().split("/")[1]
+	const router = useRouter()
+
+	const changeName = () => {
+		const elm = document.getElementById("deleteFuncName") as HTMLInputElement
+		if (elm) {
+			const value = elm.value
+			setName(value)
+		}
+	}
+
+	const deleteAction = async () => {
+		const res: Boolean = await deleteFunction(func?.id)
+		const title = (res) ? "Deleted function" : "Unexpected error"
+		toast(title, {
+			cancel: {
+				label: "Got it"
+			}
+		})
+		const closeButton = document.getElementById("deleteCloseButton") as any
+		closeButton.click()
+		if (res) {
+			router.push(`/${workspaceId}/functions`)
+			return null
+		}
+	}
+
+	return (
+		<div className="w-full rounded-md border-1 border-red-500/50 bg-red-500/5 p-6 relative">
+			<div className="flex items-center gap-3 mb-6">
+				<Badge color="gray">Settings</Badge>
+				<Text color="gray">/</Text>
+				<Badge color="gray">Danger zone</Badge>
+			</div>
+
+			<div className="flex items-center">
+				<div className="w-full flex flex-col">
+					<Text mb="1" size="4">Delete function</Text>
+					<Text color="gray">
+						Delete this function and all its deployments.
+					</Text>
+				</div>
+
+				<div className="flex items-center justify-end">
+					<Dialog.Root>
+						<Dialog.Trigger>
+							<Button
+								color="red"
+								variant="surface"
+								size="2"
+							>
+								<div className="flex items-center gap-1">
+									<Icon id="trash" />
+									Delete function
+								</div>
+							</Button>
+						</Dialog.Trigger>
+						<Dialog.Content
+							style={{
+							    maxWidth: 500,
+							    backgroundColor: "rgba(50, 50, 50, .1)",
+							    backdropFilter: "blur(5px)",
+							    borderRadius: "10px"
+							}}
+						>
+							<Dialog.Title mb="1">Delete function</Dialog.Title>
+							<Text color="gray">Enter the function name to delete it (<b>{func?.name}</b>)</Text>
+							<TextField.Input
+								id="deleteFuncName" mt="4" mb="4" 
+								placeholder="Enter function name" 
+								color="red"
+								onInput={() => changeName()}
+							/>
+							<div className="flex items-center justify-end gap-4">
+								<Dialog.Close>
+									<Button id="deleteCloseButton" color="gray" variant="soft">
+										<div className="flex items-center gap-2">
+											Cancel
+											<Badge variant="surface">esc</Badge>
+										</div>
+									</Button>
+								</Dialog.Close>
+								{
+									(name === func?.name)
+										? <SubmitButton action={deleteAction} color="red">
+											<div className="flex items-center gap-1">
+												<Icon id="trash" /> Delete
+											</div>
+										</SubmitButton>
+										: <Button variant="surface" color="gray" disabled>
+											<div className="flex items-center gap-1">
+												<Icon id="trash" /> Delete
+											</div>
+										</Button>
+								}
+							</div>
+						</Dialog.Content>
+					</Dialog.Root>
+				</div>
 			</div>
 		</div>
 	)

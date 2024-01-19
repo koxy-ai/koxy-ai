@@ -27,8 +27,8 @@ export default function WorkspaceLayout({ config, children }: { config: Config, 
 			
 			<InterfaceNav id={config?.workspace?.id} active={config?.navbar?.active} />
 			<ResizablePanelGroup className="min-w-screen pl-14" direction="horizontal">
-				
-				<ResizablePanel defaultSize={20}>
+
+				<ResizablePanel defaultSize={25}>
 					<Sidebar
 						workspace={config?.workspace}
 						actions={config?.sidebar?.actions}
@@ -36,7 +36,7 @@ export default function WorkspaceLayout({ config, children }: { config: Config, 
 					/>
 				</ResizablePanel>
 				<ResizableHandle withHandle />
-				<ResizablePanel>
+				<ResizablePanel defaultSize={100}>
 					{children}
 				</ResizablePanel>
 			</ResizablePanelGroup>

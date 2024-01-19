@@ -31,7 +31,7 @@ export default async function getProject(id: string): Promise<FuncRes | null> {
 	}
 
 	try {
-		const res = await fetch(`${api}/projects/${func.id}/deployments?limit=1&sort=created_at`, {headers})
+		const res = await fetch(`${api}/projects/${func.id}/deployments?limit=1&sort=created_at&order=desc`, {headers})
 		let deployments: Array<Deployment> = await res.json()
 		return {
 			name: func.name,

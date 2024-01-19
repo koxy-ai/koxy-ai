@@ -1,9 +1,14 @@
 class Once {
 
-	state: "expired" | "ready" = "ready"
+	state: string = "ready"
 	action: Function | null = null
+	id: string | null = null
 
-	constructor(action?: Function) {
+	constructor(id?: string, action?: Function) {
+		if (id) {
+			this.id = id
+			this.state = `${id}-ready`
+		}
 		if (action) {
 			this.action = action
 		}
@@ -14,8 +19,16 @@ class Once {
 		return this
 	}
 
+	setId(id: string) {
+		this.id = id
+		if (this.state === "ready") {
+			this.state = `${id}-ready`
+		}
+		return this
+	}
+
 	isState() {
-		return (this.state === "ready") ? true : false
+		return (this.state === `${this.id}-expired`) ? false : true
 	}
 
 	async execute(options?: { force?: Boolean, parameters?: any }) {
@@ -32,7 +45,7 @@ class Once {
 
 		const check = this.isState()
 		if (check) {
-			this.state = "expired"
+			this.state = `${this.id}-expired`
 			const res: any = await this.action(options.parameters || {})
 			return res
 		}

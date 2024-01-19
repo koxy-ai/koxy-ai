@@ -12,15 +12,15 @@ import WorkspaceHeadInfo from "@/components/layout/WorkspaceHeadInfo"
 import PricingPlan from "@/components/layout/PricingPlan"
 import FirstTimeFeature from "@/components/layout/FirstTimeFeature"
 import Card from "@/components/layout/Card"
+import getUser from "@/app/[id]/layout"
 
 import { Button, Heading, Text, TextField, DropdownMenu } from "@radix-ui/themes"
 
-import listFunctions from "@/app/actions/workspaces/listFunctions"
+import listFlows from "@/app/actions/workspaces/listFlows"
 import isArray from "@/scripts/isArray"
 import is from "@/scripts/is"
 
-const Functions = () => ( <Auth Comp={Init} /> )
-const Init = ({ user }: Props) => ( <WorkspacePage user={user} Comp={Page} /> )
+const Flows = () => ( <WorkspacePage Comp={Page} /> )
 
 type FunctionType = {
 	id: string,
@@ -34,35 +34,27 @@ function Page({ workspace, user }: PageProps) {
 	const config: Config = {
 		workspace,
 		navbar: {
-			active: "functions"
+			active: "flows"
 		},
 		sidebar: {
 			actions,
-			active: "your-functions"
+			active: "your-flows"
 		}
 	}
 
 	const router = useRouter()
-	const [ functions, setFunctions ] = useState<Array<FunctionType> | null>(null)
+	const [ flows, setFlows ] = useState<Array<FunctionType> | null>(null)
 
 	useEffect(() => {
-		if (!functions && workspace.plan !== "free") {
-			listFunctions(workspace?.id).then( (data: any) => {
-				isArray(data, (functionsData: Array<FunctionType>) => {
-					setFunctions(functionsData)
+		if (!flows) {
+			listFlows(workspace?.id).then( (data: any) => {
+				isArray(data, (flowsData: Array<FunctionType>) => {
+					setFlows(flowsData)
 				})
 			})
 			.catch( (err: any) => {}) // No need to do anything here
 		}
 	}, [])
-
-	if (workspace.plan === "free") {
-		return (
-			<WorkspaceLayout config={config}>
-				<PricingPlan mainFeature="Edge functions" />
-			</WorkspaceLayout>
-		)
-	}
 
 	return (
 		<WorkspaceLayout config={config}>
@@ -71,9 +63,9 @@ function Page({ workspace, user }: PageProps) {
 				
 				<div className="mainHead">
 					<WorkspaceHeadInfo
-						icon="code"
-						title="Edge Functions"
-						info="Serverless functions served on the edge"
+						icon="route"
+						title="Flows"
+						info="Serverless APIs served on the edge"
 					/>
 					<div className="w-full flex items-center justify-end gap-6">
 						<Button color="gray" variant="soft" size="2">
@@ -81,18 +73,18 @@ function Page({ workspace, user }: PageProps) {
 							Documentation
 						</Button>
 						<Button 
-							onClick={() => router.push("functions/new")}
+							onClick={() => router.push("flows/new")}
 							variant="surface"
 							size="2"
 						>
-							New function
+							New flow
 							<Icon id="chevron-right" />
 						</Button>
 					</div>
 				</div>
 
 				<div className="p-6">
-					<FunctionsBody functions={functions} />
+					<FlowsBody flows={flows} />
 				</div>
 
 			</main>
@@ -102,25 +94,25 @@ function Page({ workspace, user }: PageProps) {
 
 }
 
-function FunctionsBody({ functions }: { functions: Array<FunctionType> | null }) {
+function FlowsBody({ flows }: { flows: Array<FunctionType> | null }) {
 
 	const router = useRouter()
 
-	if (!functions) {
-		return <LoadingFunctions />
+	if (!flows) {
+		return <LoadingFlows />
 	}
 
-	if (functions.length < 1) {
+	if (flows.length < 1) {
 		return <FirstTimeFeature
-			icon="code"
-			title="Create your first edge function"
+			icon="route"
+			title="Create your first flow"
 			description="
-				Edge functions are Serverless TypeScript functions served edge-close to your users, 
-				can be excuted from your front-end or integrated into your AI flows
+				Edge flows are Serverless APIs built using a no-code builder and served edge-close to your users, 
+				can be excuted from your front-end.
 			"
 			button={{
-				title: "Create function",
-				action: () => ( router.push("functions/new") )
+				title: "Create flow",
+				action: () => ( router.push("flows/new") )
 			}}
 		/>
 	}
@@ -145,9 +137,7 @@ function FunctionsBody({ functions }: { functions: Array<FunctionType> | null })
 			}
 		})
 
-	}
-
-	
+	}	
 
 	return (
 		<div className="flex flex-col gap-4">
@@ -171,7 +161,7 @@ function FunctionsBody({ functions }: { functions: Array<FunctionType> | null })
 							title={functionItem.name}
 							info={functionItem.id}
 							icon={functionItem.status === "progressing" ? "loader" : "code"}
-							action={() => router.push(`functions/${functionItem.id}`)}
+							action={() => router.push(`flows/${functionItem.id}`)}
 							Options={() => {
 								return (
 									<FuncOptions functionItem={functionItem} />
@@ -203,7 +193,7 @@ const FuncOptions = ({ functionItem }: { functionItem: FunctionType }) => {
 }
 
 const Option = ({ title, path, color }: { title: string, path: string, color?: any }) => {
-	
+
 	const router = useRouter()
 
 	const pushLink = () => {
@@ -215,7 +205,7 @@ const Option = ({ title, path, color }: { title: string, path: string, color?: a
 	)
 }
 
-function LoadingFunctions() {
+function LoadingFlows() {
 	return (
 		<div className="flex flex-col gap-4">
 			<div className="flex items-center">
@@ -236,4 +226,4 @@ function LoadingFunctions() {
 	)
 }
 
-export default Functions
+export default Flows
