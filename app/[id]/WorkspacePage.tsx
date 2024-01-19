@@ -1,5 +1,5 @@
-"use client"
 
+import { GetServerSidePropsContext } from 'next'
 import getWorkspace from "./workspace"
 import is from "@/scripts/is"
 import { useEffect, useState, type ReactNode } from "react"
@@ -18,6 +18,23 @@ export type PageProps = {
 
 const memWorkspace: {value: any} = {
 	value: null
+}
+
+export async function getServerSideProps(context: GetServerSidePropsContext) {
+
+	const { id } = context.query;
+	if (!id) {
+
+	}
+
+	const workspace: any = await getWorkspace(id as string)
+
+	return {
+		props: {
+			workspace
+		}
+	}
+
 }
 
 export default function WorkspacePage({ Comp }: { Comp: any }) {

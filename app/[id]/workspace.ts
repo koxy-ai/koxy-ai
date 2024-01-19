@@ -1,13 +1,11 @@
-"use client"
 
-import { usePathname } from "next/navigation"
 import getWorkspace from "@/app/actions/workspaces/get"
+import { redirect } from "next/navigation"
 
-export default async function workspace(id: string, router: any) {
+export default async function workspace(id: string) {
 
 	const changeRouterPath = (path: string) => {
-		router.push(path)
-		return null
+		return redirect(path)
 	}
 
 	if (!id) {
@@ -17,12 +15,10 @@ export default async function workspace(id: string, router: any) {
 	const res = await getWorkspace(id)
 
 	if (!res) {
-		localStorage.removeItem("latest_workspace")
 		return changeRouterPath("/")
 	}
 
 	if (res.err || !res.data) {
-		localStorage.removeItem("latest_workspace")
 		return changeRouterPath("/")
 	}
 

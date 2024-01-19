@@ -1,16 +1,11 @@
 "use client"
 
 import Icon from "../Icon"
-import { Button, Dialog, Text, Badge } from "@radix-ui/themes"
+import { Dialog, Text, Badge } from "@radix-ui/themes"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import is from "@/scripts/is"
 import getAllWorkspaces from "@/app/actions/workspaces/getAll"
-
-import {
-    ResizableHandle,
-    ResizablePanel,
-} from "@/components/ui/resizable"
 
 export type SidebarAction = {
     name: string,

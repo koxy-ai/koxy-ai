@@ -1,9 +1,15 @@
 "use server"
 
 import supabaseServer from "@/app/actions/supabaseServer"
-import isArray from "@/scripts/isArray"
 
-export default async function listFunctions(workspaceId: string) {
+export type FlowType = {
+	id: string,
+	name: string,
+	created_at: string,
+	status: string
+}
+
+export default async function listFlows(workspaceId: string): Promise<null | FlowType[]> {
 
 	if (!workspaceId || typeof workspaceId !== "string") {
 		return []
@@ -17,6 +23,10 @@ export default async function listFunctions(workspaceId: string) {
 		.eq("workspace_id", workspaceId)
 		.order("created_at", { ascending: false })
 
-	return error || data
+	if (error || !data) {
+		return null
+	}
+
+	return data as FlowType[]
 
 }
