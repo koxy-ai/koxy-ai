@@ -1,18 +1,25 @@
 import "@radix-ui/themes/styles.css"
-import "./global.css"
+import "@/styles/global.css"
 import "../theme-config.css"
 import type { Metadata } from "next"
 import { Theme } from "@radix-ui/themes"
 import Alert from "@/components/Alert"
 import { Toaster } from "@/components/ui/sonner"
+import { Inter as FontSans } from "next/font/google"
+import { cn } from "@/lib/utils"
+
+type Children = {
+  children: React.ReactNode
+}
+
+export const fontSans = FontSans({
+  subsets: ["latin"],
+  variable: "--font-sans",
+})
 
 export const metadata: Metadata = {
   title: "Koxy AI",
   description: "Serverless AI-powered platform",
-}
-
-type Children = {
-  children: React.ReactNode
 }
 
 export default function RootLayout({ children }: Children) {
@@ -27,9 +34,13 @@ export default function RootLayout({ children }: Children) {
         <link rel="preconnect" href="https://fonts.gstatic.com" />
         <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet" />
       </head>
-      <body >
-        <Theme appearance="dark" radius="large" accentColor="pink" scaling="95%">
-          <Alert />
+      <body
+        className={cn(
+          "min-h-screen bg-background font-sans antialiased dark",
+          fontSans.variable
+        )}
+      >
+        <Theme appearance="dark" radius="large" accentColor="gray" scaling="95%">
           {children}
           <Toaster />
         </Theme>

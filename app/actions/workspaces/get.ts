@@ -1,12 +1,13 @@
 "use server"
 
 import supabaseServer from "@/app/actions/supabaseServer"
+import Workspace from "@/types/workspace";
 import { redirect } from "next/navigation"
 
 export default async function getWorkspace(id: string) {
 
 	if (!id) {
-		return redirect("/");
+		return redirect("/workspaces");
 	}
 
 	const supabase = supabaseServer();
@@ -14,14 +15,12 @@ export default async function getWorkspace(id: string) {
 	const { error, data } = await supabase
 		.from("workspaces")
 		.select("id, name, plan, team_id")
-		.eq("id", id)
+		.eq("id", id);
 
 	if (error || !data || data.length < 1) {
-		return redirect("/");
+		return redirect("/workspaces");
 	}
 
-	return {
-		data: data[0]
-	};
+	return data[0] as Workspace;
 
 }
