@@ -16,8 +16,10 @@ export default function Paths({ user }: { user: User }) {
             <Text color="gray" size="2">{user?.user_metadata?.name || user?.email?.split("@")[0]}</Text>
             {items.map(item => (
                 (items.indexOf(item) === (items.length - 1))
-                    ? <Text className="text-white" size="2">{item}</Text>
-                    : <div className="flex">
+                    ? <div key={item}>
+                        <Text className="text-white" size="2">{item}</Text>
+                    </div>
+                    : <div key={item} className="flex">
                         <Text color="gray" size="2">{item}</Text>
                         <Icon id="chevron-right" />
                     </div>
