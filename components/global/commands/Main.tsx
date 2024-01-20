@@ -28,7 +28,7 @@ export function toggleMainCommands() {
 export default function MainCommands({ custom }: { custom?: any }) {
 
     const [open, setOpen] = useState<boolean | undefined>(false);
-    const [ navigations, setNavigations ] = useState<HTMLElement[]>([])
+    const [navigations, setNavigations] = useState<HTMLElement[]>([])
 
     const toggleState = () => {
         setOpen((open) => !open);
@@ -88,14 +88,16 @@ export default function MainCommands({ custom }: { custom?: any }) {
 
                     <CommandGroup heading="Navigation">
                         {navigations && navigations.map(nav => (
-                            nav?.innerText && <Item 
-                                title={nav?.innerText} 
-                                icon="chevron-right"
-                                action={() => {
-                                    toggleState();
-                                    nav.click();
-                                }}
-                            />
+                            nav?.innerText && <div key={`mainNav-${nav?.id}`}>
+                                <Item
+                                    title={nav?.innerText}
+                                    icon="chevron-right"
+                                    action={() => {
+                                        toggleState();
+                                        nav.click();
+                                    }}
+                                />
+                            </div>
                         ))}
                     </CommandGroup>
 

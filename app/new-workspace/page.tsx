@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from 'react'
 import Auth, { type Props } from '../auth/Auth'
-import getAllWorkspaces from '../workspaces/getAll'
 import LoadingPage from '../../components/loading/page'
 import { Card, Heading, Flex, Text, TextField, Select, Badge, Link } from '@radix-ui/themes'
+import getAllWorkspaces from '../actions/workspaces/getAll'
 
 const NewWorkspace = () => ( <Auth Comp={Page} /> )
 

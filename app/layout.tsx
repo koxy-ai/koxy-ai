@@ -12,7 +12,7 @@ type Children = {
   children: React.ReactNode
 }
 
-export const fontSans = FontSans({
+const fontSans = FontSans({
   subsets: ["latin"],
   variable: "--font-sans",
 })

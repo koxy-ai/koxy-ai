@@ -81,24 +81,28 @@ export default function SidePanel({ workspace, active }: { workspace: Workspace,
 
             <div className="h-full flex flex-col gap-5 p-5">
                 {mainActions.map(action => (
-                    <Item
-                        workspaceName={workspace.name}
-                        icon={action.icon}
-                        title={action.title}
-                        path={buildPath(action.path)}
-                        active={active}
-                    />
+                    <div key={`panelAction-${action.title}`}>
+                        <Item
+                            workspaceName={workspace.name}
+                            icon={action.icon}
+                            title={action.title}
+                            path={buildPath(action.path)}
+                            active={active}
+                        />
+                    </div>
                 ))}
             </div>
             <div className="flex flex-col gap-5 p-5">
                 {secondActions.map(action => (
-                    <Item
-                        workspaceName={workspace.name}
-                        icon={action.icon}
-                        title={action.title}
-                        path={buildPath(action.path)}
-                        active={active}
-                    />
+                    <div key={`panelAction-${action.title}`}>
+                        <Item
+                            workspaceName={workspace.name}
+                            icon={action.icon}
+                            title={action.title}
+                            path={buildPath(action.path)}
+                            active={active}
+                        />
+                    </div>
                 ))}
             </div>
         </nav>
