@@ -23,29 +23,39 @@ export default function Cards({ workspaces }: { workspaces: Workspace[] }) {
                                 {workspace?.plan} workspace</Text>
                         </div>
                     </Link>
+
                     <div className="absolute top-4 right-4">
                         <DropdownMenu.Root>
+
                             <DropdownMenu.Trigger>
                                 <IconButton className="hover:bg-accent focus:bg-accent" variant="ghost" color="gray">
                                     <Icon id="dots" />
                                 </IconButton>
                             </DropdownMenu.Trigger>
+
                             <DropdownMenu.Content variant="soft" className="dropMenu min-w-[9rem]">
-                                <MenuOption title="Overview" path={`/workspaces/${workspace.id}/`} />
+                                <MenuOption icon="layout" title="Overview" path={`/workspaces/${workspace.id}/`} />
                                 <DropdownMenu.Separator />
+
                                 <DropdownMenu.Sub>
-                                    <DropdownMenu.SubTrigger>Domains</DropdownMenu.SubTrigger>
+                                    <DropdownMenu.SubTrigger>
+                                        <div className="flex items-center gap-2 text-foreground/80">
+                                            <Icon id="link" size="14px" /> Domains
+                                        </div>
+                                    </DropdownMenu.SubTrigger>
                                     <DropdownMenu.SubContent className="bg-black">
-                                        <MenuOption title="All domains" path={`/workspaces/${workspace.id}/domains`} />
-                                        <MenuOption title="Connect domain..." path={`/workspaces/${workspace.id}/domains/new`} />
+                                        <MenuOption icon="link" title="All domains" path={`/workspaces/${workspace.id}/domains`} />
+                                        <MenuOption icon="plus" title="Connect domain..." path={`/workspaces/${workspace.id}/domains/new`} />
                                     </DropdownMenu.SubContent>
                                 </DropdownMenu.Sub>
-                                <MenuOption title="Databases" path={`/workspaces/${workspace.id}/databases`} />
+
+                                <MenuOption icon="database" title="Databases" path={`/workspaces/${workspace.id}/databases`} />
                                 <DropdownMenu.Separator />
-                                <MenuOption title="Settings" path={`/workspaces/${workspace.id}/settings`} />
+                                <MenuOption icon="settings" title="Settings" path={`/workspaces/${workspace.id}/settings`} />
                             </DropdownMenu.Content>
                         </DropdownMenu.Root>
                     </div>
+
                 </div>
             ))}
 
@@ -54,11 +64,15 @@ export default function Cards({ workspaces }: { workspaces: Workspace[] }) {
 
 }
 
-function MenuOption({ title, path }: { title: string, path: string }) {
+function MenuOption({ icon, title, path }: { icon: string, title: string, path: string }) {
 
     return (
         <Link href={path}>
-            <DropdownMenu.Item>{title}</DropdownMenu.Item>
+            <DropdownMenu.Item>
+                <div className="flex items-center gap-2 text-foreground/80">
+                    <Icon id={icon} size="14px" /> {title}
+                </div>
+            </DropdownMenu.Item>
         </Link>
     )
 

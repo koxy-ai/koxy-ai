@@ -1,3 +1,5 @@
+"use client"
+
 import Link from "next/link";
 import Icon from "./Icon";
 import { Text } from "@radix-ui/themes";
@@ -46,9 +48,9 @@ const mainActions = [
 
 const secondActions = [
     {
-        icon: "clock",
-        title: "Corn jobs",
-        path: "/corn"
+        icon: "users-group",
+        title: "Team members",
+        path: "/team"
     },
     {
         icon: "settings",
@@ -63,12 +65,14 @@ export default function SidePanel({ workspace, active }: { workspace: Workspace,
     const buildPath = (path: string) => `/workspaces/${id}${path}`;
 
     return (
-        <nav className="sidePanel">
+        <div className="sidePanel">
 
-            <div className="flex items-center gap-2 p-5 pt-3 pb-3">
+            <div className="flex items-center gap-2 w-full min-h-[3.2rem] pl-5 pr-5 border-b-1 border-border/50">
                 <div className="flex items-center gap-2 w-full truncate">
-                    <div className="w-7 h-7 flex items-center justify-center border-1 rounded-lg text-xs font-semibold buttonGradient">
-                        {workspace?.name.substring(0, 1)}
+                    <div className="w-7 h-7 flex items-center justify-center border-1 rounded-lg font-semibold buttonGradient">
+                        <div className="text-xs">
+                            {workspace?.name.substring(0, 1)}
+                        </div>
                     </div>
                     <Text color="gray" size="2">{workspace.name}</Text>
                 </div>
@@ -76,8 +80,6 @@ export default function SidePanel({ workspace, active }: { workspace: Workspace,
                     <Icon id="selector" />
                 </div>
             </div>
-
-            <div className="w-full border-t-1 border-border/50"></div>
 
             <div className="h-full flex flex-col gap-5 p-5">
                 {mainActions.map(action => (
@@ -105,7 +107,7 @@ export default function SidePanel({ workspace, active }: { workspace: Workspace,
                     </div>
                 ))}
             </div>
-        </nav>
+        </div>
     )
 
 }
@@ -120,7 +122,7 @@ function Item({ icon, title, path, active, workspaceName }: ItemProps) {
                 <div className={`sidebarButtonIcon ${isActive && "text-power"}`}>
                     <Icon id={icon} />
                 </div>
-                <Text className="scale-0 absolute">{workspaceName}</Text>
+                <Text className="scale-0 absolute">{`${workspaceName} -> `}</Text>
                 <Text>{title}</Text>
             </div>
         </Link>

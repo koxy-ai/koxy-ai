@@ -72,11 +72,11 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground p-0;
   }
 
   .linksFlex {
-    @apply flex items-center gap-7 w-full;
+    @apply flex items-center gap-8 w-full;
   }
 
   .headRight {
@@ -94,13 +94,13 @@
   }
 
   .sidePanel {
-    @apply h-full min-h-full max-h-full border-r-1 border-border/40 overflow-y-auto flex flex-col;
+    @apply fixed top-14 left-0 w-64 pb-14 h-full max-h-full border-r-1 border-border/40 overflow-y-auto flex flex-col;
   }
 
   .sidebarButton {
     @apply flex items-center w-full p-1 pl-2 pr-2 gap-2 text-xs text-gray-300 hover:bg-[var(--gray-a2)] rounded-md transition-all duration-500 min-w-max;
   }
-  
+
   .sidebarButtonIcon {
     @apply w-6 h-6 border-1 border-[var(--gray-a5)] rounded-md mr-1 flex items-center justify-center;
   }
@@ -109,4 +109,26 @@
     text-shadow: 0px 0px 5px rgba(255, 255, 255, .4);
   }
 
+  .innerMain {
+    @apply w-full pl-64 pt-14 flex flex-col;
+  }
+
+  .pattern1 {
+    background-color: #e5e5f7;
+    opacity: 0.8;
+    background-image: radial-gradient(ellipse farthest-corner at 5px 6px, #eee, #eee 50%, black 50%);
+    background-size: 10px 10px;
+  }
+
+  .pattern2 {
+    background-color: #21212121;
+    opacity: 0.8;
+    background-image: repeating-linear-gradient(45deg, #41414141 25%, transparent 25%, transparent 75%, #41414141 75%, #31313131), repeating-linear-gradient(45deg, #25252525 25%, #25252525 25%, #25252525 75%, #43434343 75%, #43434343);
+    background-position: 0 0, 10px 10px;
+    background-size: 20px 20px;
+  }
+
+  .powerShadow {
+    box-shadow: 0px 0px 3px 0px #6B5DEF;
+  }
 }

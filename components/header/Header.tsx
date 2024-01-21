@@ -44,7 +44,7 @@ export default function Header({ user, links, children, activeLink }: Props) {
             <MainCommands />
 
             <div className="headRight">
-                <Button className="w-8 h-8 opacity-70 hover:opacity-100" size="icon" variant="ghost">
+                <Button className="w-8 h-8 opacity-70 hover:opacity-100" size="icon" variant="outline">
                     <Icon id="bell" size="18px" />
                 </Button>
                 <TopAvatar user={user} />

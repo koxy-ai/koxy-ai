@@ -38,7 +38,7 @@ export default function HeadLink({ title, path, target, active }: LinkType) {
             href={path} target={target || "_self"}
             className={`navigationLink ${(!active) && "opacity-70"} hover:opacity-100 transition-all`}
         >
-            <div className="text-[.84rem] leading-7">{title}</div>
+            <div className="text-[.835rem] leading-7">{title}</div>
         </Link>
     )
 

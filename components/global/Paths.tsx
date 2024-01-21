@@ -9,7 +9,6 @@ export default function Paths({ user }: { user: User }) {
 
     const items: string[] = usePathname().split("/");
     items.filter((value: string) => value !== location.origin);
-    // const items = path.slice(1, (path.length - 1));
 
     return (
         <div className="flex items-center gap-3 pb-3 text-foreground/50">

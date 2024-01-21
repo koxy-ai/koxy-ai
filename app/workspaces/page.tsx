@@ -44,7 +44,7 @@ export default async function Workspaces() {
                         Docs
                     </Button>
                     <Button
-                        size="small"
+                        size="sm"
                         variant="power"
                         style={{
                             boxShadow: "0px 0px 3px 0px #6B5DEF"

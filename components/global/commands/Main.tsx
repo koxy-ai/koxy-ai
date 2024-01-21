@@ -1,9 +1,9 @@
 "use client"
 
-import { useEffect, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge, Button as RadixButton } from "@radix-ui/themes";
-import Icon from "@/components/Icon";
+import Item from "./Item";
 
 import {
     CommandDialog,
@@ -15,7 +15,6 @@ import {
     CommandSeparator,
     CommandShortcut,
 } from "@/components/ui/command"
-import Item from "./Item";
 
 export function toggleMainCommands() {
     const elm = document.getElementById("mainCommandsButton");
@@ -25,7 +24,7 @@ export function toggleMainCommands() {
     elm.click();
 }
 
-export default function MainCommands({ custom }: { custom?: any }) {
+export default function MainCommands({ children }: { children?: ReactNode }) {
 
     const [open, setOpen] = useState<boolean | undefined>(false);
     const [navigations, setNavigations] = useState<HTMLElement[]>([])
@@ -38,6 +37,10 @@ export default function MainCommands({ custom }: { custom?: any }) {
         if (e.key === "/" && (e.metaKey || e.ctrlKey)) {
             e.preventDefault();
             toggleState()
+        }
+        if (e.key === "f" && (e.metaKey || e.ctrlKey)) {
+            e.preventDefault();
+
         }
     }
 
@@ -81,11 +84,6 @@ export default function MainCommands({ custom }: { custom?: any }) {
                         <Item icon="plus" title="Create new workspace..." />
                     </CommandGroup>
 
-                    <CommandGroup heading="General">
-                        <Item icon="copy" title="Copy current URL" />
-                        <Item icon="copy-plus" title="Duplicate window" shortcut="⌘ + D" />
-                    </CommandGroup>
-
                     <CommandGroup heading="Navigation">
                         {navigations && navigations.map(nav => (
                             nav?.innerText && <div key={`mainNav-${nav?.id}`}>
@@ -99,6 +97,11 @@ export default function MainCommands({ custom }: { custom?: any }) {
                                 />
                             </div>
                         ))}
+                    </CommandGroup>
+
+                    <CommandGroup heading="General">
+                        <Item icon="copy" title="Copy current URL" />
+                        <Item icon="copy-plus" title="Duplicate window" shortcut="⌘ + D" />
                     </CommandGroup>
 
                     <CommandGroup heading="Account">

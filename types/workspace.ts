@@ -1,7 +1,7 @@
 type Workspace = {
     id: string,
     name: string,
-    plan: string,
+    plan: "free" | "pro",
     team_id?: string
 }
 

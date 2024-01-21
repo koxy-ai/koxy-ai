@@ -15,18 +15,19 @@ const buttonVariants = cva(
         outline:
           "border border-input hover:bg-accent/50 hover:text-accent-foreground",
         outline2:
-          "border border-input hover:bg-accent/50 hover:text-accent-foreground buttonGradient",
+          "border border-input hover:bg-accent/40 hover:text-accent-foreground buttonGradient",
         secondary:
           "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
-        power: "text-xs gap-2 h-8 pt-0.5 pb-0.5 text-white rounded-[.5rem] pl-4 pr-4 bg-power hover:bg-lightPower border-1 border-borderPower"
+        power: "text-white bg-power hover:bg-lightPower border-1 border-borderPower"
       },
       size: {
         small: "h-8 rounded-[.5rem]",
         default: "h-10 px-4 py-2",
-        sm: "h-9 rounded-md px-3",
-        lg: "h-11 rounded-md px-8",
+        sm: "h-9 rounded-[.5rem] text-xs px-3 gap-2 h-8 pt-0.5 pb-0.5 pl-4 pr-4",
+        xs: "max-h-[2rem] rounded-[.5rem] text-xs px-3 gap-2 h-8 pt-0 pb-0 pl-3 pr-3",
+        lg: "h-11 rounded-[.5rem] px-8",
         icon: "h-10 w-10",
       },
     },
