@@ -1,3 +1,4 @@
+"use client"
 
 import { Heading } from "@radix-ui/themes";
 import { type ReactNode } from "react";
@@ -22,10 +23,7 @@ export default function Header({ user, links, children, activeLink }: Props) {
     return (
         <header className="fixed top-0 z-50 w-full border-b border-border/40 bg-background/90 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60 flex items-center h-14 pl-5 pr-5">
             <div className="flex items-center gap-1 mr-9 min-w-max">
-                <img src="/koxy-logo.png" className="w-8" />
-                <div className="flex items-center gap-1 mt-1">
-                    <Heading size="3">koxy ai</Heading>
-                </div>
+                <img src="/koxy-latest.png" className="w-[6.5rem]" />
             </div>
 
             <div className="linksFlex">

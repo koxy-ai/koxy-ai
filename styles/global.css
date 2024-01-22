@@ -1018,10 +1018,6 @@ body {
   height: 100vh;
 }
 
-.h-12 {
-  height: 3rem;
-}
-
 .max-h-9 {
   max-height: 2.25rem;
 }
@@ -1060,6 +1056,10 @@ body {
 
 .w-10 {
   width: 2.5rem;
+}
+
+.w-12 {
+  width: 3rem;
 }
 
 .w-3 {
@@ -1128,6 +1128,38 @@ body {
 
 .w-screen {
   width: 100vw;
+}
+
+.w-20 {
+  width: 5rem;
+}
+
+.w-24 {
+  width: 6rem;
+}
+
+.w-28 {
+  width: 7rem;
+}
+
+.w-\[2rem\] {
+  width: 2rem;
+}
+
+.w-\[4rem\] {
+  width: 4rem;
+}
+
+.w-\[7rem\] {
+  width: 7rem;
+}
+
+.w-\[6rem\] {
+  width: 6rem;
+}
+
+.w-\[6\.5rem\] {
+  width: 6.5rem;
 }
 
 .min-w-\[3rem\] {
@@ -1334,11 +1366,6 @@ body {
   border-top-right-radius: 10px;
 }
 
-.rounded-t-lg {
-  border-top-left-radius: var(--radius);
-  border-top-right-radius: var(--radius);
-}
-
 .border {
   border-width: 1px;
 }
@@ -1416,6 +1443,10 @@ body {
   border-color: hsl(var(--border) / 0.7);
 }
 
+.border-border\/90 {
+  border-color: hsl(var(--border) / 0.9);
+}
+
 .border-borderPower {
   --tw-border-opacity: 1;
   border-color: rgb(149 139 244 / var(--tw-border-opacity));
@@ -1432,14 +1463,6 @@ body {
 .border-purple-500 {
   --tw-border-opacity: 1;
   border-color: rgb(168 85 247 / var(--tw-border-opacity));
-}
-
-.border-border\/80 {
-  border-color: hsl(var(--border) / 0.8);
-}
-
-.border-border\/90 {
-  border-color: hsl(var(--border) / 0.9);
 }
 
 .bg-\[\#080808\] {
@@ -1464,12 +1487,12 @@ body {
   background-color: #51515151;
 }
 
-.bg-accent\/20 {
-  background-color: hsl(var(--accent) / 0.2);
+.bg-accent\/10 {
+  background-color: hsl(var(--accent) / 0.1);
 }
 
-.bg-accent\/30 {
-  background-color: hsl(var(--accent) / 0.3);
+.bg-accent\/20 {
+  background-color: hsl(var(--accent) / 0.2);
 }
 
 .bg-accent\/40 {
@@ -1553,18 +1576,6 @@ body {
 
 .bg-transparent {
   background-color: transparent;
-}
-
-.bg-accent\/10 {
-  background-color: hsl(var(--accent) / 0.1);
-}
-
-.bg-power\/10 {
-  background-color: rgb(107 93 239 / 0.1);
-}
-
-.bg-power\/50 {
-  background-color: rgb(107 93 239 / 0.5);
 }
 
 .p-0 {
@@ -1739,6 +1750,10 @@ body {
   font-size: .8rem;
 }
 
+.text-\[\.9rem\] {
+  font-size: .9rem;
+}
+
 .text-lg {
   font-size: 1.125rem;
   line-height: 1.75rem;
@@ -1752,10 +1767,6 @@ body {
 .text-xs {
   font-size: 0.75rem;
   line-height: 1rem;
-}
-
-.text-\[\.9rem\] {
-  font-size: .9rem;
 }
 
 .font-bold {
@@ -2097,10 +2108,6 @@ body {
 
 .hover\:opacity-100:hover {
   opacity: 1;
-}
-
-.focus\:border-white\/50:focus {
-  border-color: rgb(255 255 255 / 0.5);
 }
 
 .focus\:border-white\/30:focus {
