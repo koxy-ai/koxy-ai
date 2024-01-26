@@ -7,8 +7,9 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button";
 import Icon from "@/components/Icon";
 import getUser from "@/app/actions/user/get";
+import Link from "next/link";
 
-const allowed: {free: number, pro: number} = {
+const allowed: { free: number, pro: number } = {
     free: 3,
     pro: 10
 }
@@ -18,11 +19,6 @@ export default async function NewFlow({ params }: { params: { id: string } }) {
     const user = await getUser();
     const workspace = await getWorkspace(params.id);
     const flows = await listFlows(workspace.id) || [];
-
-    const isAllowed = (flows.length < allowed[workspace.plan]);
-    if (!isAllowed) {
-        return <>You can't create more than {flows.length} flows in the {workspace.plan} plan.</>
-    }
 
     const paths: PathType[] = [
         {
@@ -35,6 +31,28 @@ export default async function NewFlow({ params }: { params: { id: string } }) {
         }
     ];
 
+    const isAllowed = (flows.length < allowed[workspace.plan]);
+    if (!isAllowed) {
+        return (
+            <>
+                <SidePanel workspace={workspace} active="flows" />
+                <main className="innerMain">
+                    <TopPaths workspace={workspace} paths={paths} />
+                    <div className="pt-14">
+                        <div className="p-5">
+                            <Text color="gray" className="flex gap-2 items-center">
+                                You can't create more than {flows.length} flows in the {workspace.plan} plan. 
+                                <Link href={`/workspace/${workspace.id}/flows`} className="text-power">
+                                    Go back
+                                </Link>
+                            </Text>
+                        </div>
+                    </div>
+                </main>
+            </>
+        )
+    }
+
     return (
         <>
             <SidePanel workspace={workspace} active="flows" />
@@ -45,7 +63,7 @@ export default async function NewFlow({ params }: { params: { id: string } }) {
                         <div className="border-1 border-border/90 rounded-lg bg-accent/10 max-w-[50%] min-w-[50%]">
                             <div className="p-5 flex flex-col gap-1">
                                 <Text size="4" mb="1" className="font-semibold">
-                                    <Icon id="route" /> Create a new flow
+                                    Create a new flow
                                 </Text>
                                 <Text size="2" color="gray">
                                     Your flow will have its own API routes, nodes map, deployments, docs, domains, and analytics.
