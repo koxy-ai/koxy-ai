@@ -24,7 +24,7 @@ export default async function WorkspaceHome({ params }: { params: { id: string }
 
     return (
         <>
-            <SidePanel workspace={workspace} active="flows" />
+            <SidePanel workspace={workspace} active="api flows" />
             <main className="innerMain">
                 <TopPaths workspace={workspace} paths={paths} />
                 <div className="pt-14">
@@ -41,7 +41,7 @@ export default async function WorkspaceHome({ params }: { params: { id: string }
                                 Docs
                             </Button>
                             <Link href="flows/new">
-                                <Button variant="power" size="sm" className="powerShadow">
+                                <Button variant="power" size="sm">
                                     <Icon id="plus" />
                                     New flows
                                 </Button>

@@ -26,7 +26,7 @@ const mainActions = [
     },
     {
         icon: "route",
-        title: "Flows",
+        title: "API flows",
         path: "/flows"
     },
     {
@@ -63,17 +63,14 @@ export default function SidePanel({ workspace, active }: { workspace: Workspace,
 
     const id = workspace.id;
     const buildPath = (path: string) => `/workspaces/${id}${path}`;
+    const imgSrc = `https://api.dicebear.com/7.x/identicon/svg?seed=${id}`;
 
     return (
         <div className="sidePanel">
 
-            <div className="flex items-center gap-2 w-full min-h-[3.2rem] pl-5 pr-5 border-b-1 border-border/50">
+            <div className="sidePanelTop">
                 <div className="flex items-center gap-2 w-full truncate">
-                    <div className="w-7 h-7 flex items-center justify-center border-1 rounded-lg font-semibold buttonGradient">
-                        <div className="text-xs">
-                            {workspace?.name.substring(0, 1)}
-                        </div>
-                    </div>
+                    <img src={imgSrc} className="w-7 border-1 rounded-lg p-1.5" />
                     <Text color="gray" size="2">{workspace.name}</Text>
                 </div>
                 <div className="w-6 h-6 bg-accent/50 rounded-md flex items-center justify-center">

@@ -2,31 +2,16 @@
 
 import getRequired from "@/scripts/deno/getRequired"
 import supabaseServer from "@/app/actions/supabaseServer"
-import type Deployment from "@/scripts/deployments/type"
+import type Deployment from "@/types/deployment"
+import type DeploymentOptions from "@/types/deploymentOptions"
+import type Owner from "@/types/deploymentOwner"
 
-export type DeploymentOptions = {
-	entryPointUrl: string,
-	assets: Object,
-	envVars: Object,
-	description?: string | null,
-	importMapUrl?: string | null,
-	lockFileUrl?: string | null,
-	compilerOptions?: {
-		jsx?: string | null,
-		jsxFactory?: string | null,
-		jsxFragmentFactory?: string | null,
-		jsxImportSource?: string | null,
-	},
-}
+type Props = [string, string, Owner, DeploymentOptions];
 
-type Owner = {
-	name: string,
-	avatar: string
-}
+export default async function createDeployment(...props: Props): Promise<null | Deployment> {
 
-export default async function createDeployment(projectId: string, teamId: string, owner: Owner, options: any): Promise<null | Deployment> {
-
-	const { api, org, token, headers } = getRequired()
+	const [ projectId, teamId, owner, options ] = props;
+	const { api, headers } = getRequired()
 	const supabase = supabaseServer()
 
 	const { data, error } = await supabase

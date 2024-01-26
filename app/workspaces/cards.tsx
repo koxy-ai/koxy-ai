@@ -7,14 +7,14 @@ import Link from "next/link"
 
 export default function Cards({ workspaces }: { workspaces: Workspace[] }) {
 
+    const imgSrc = "https://api.dicebear.com/7.x/identicon/svg?seed=";
+
     return (
         <div className="p-5 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 flex gap-5">
             {workspaces.map(workspace => (
                 <div key={`workspaceCard-${workspace?.id}`} className="p-5 border-1 rounded-xl cursor-pointer hover:bg-[#28282828] relative">
                     <Link href={`/workspaces/${workspace.id}`} className="flex flex-col gap-3">
-                        <div className="w-9 h-9 hover:underline-1 border-1 font-semibold rounded-xl buttonGradient flex items-center justify-center">
-                            {String(workspace?.name).substring(0, 1)}
-                        </div>
+                        <img src={`${imgSrc}${workspace.id}`} className="w-10 border-1 rounded-lg p-2" />
                         <div className="flex flex-col gap-0.5 mt-1">
                             <Text className="font-semibold opacity-90" size="3">{workspace.name}</Text>
                             <Text size="2" color="gray" className="flex items-center gap-1">

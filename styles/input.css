@@ -33,6 +33,7 @@
     --ring: 0 0% 3.9%;
 
     --radius: 0.5rem;
+    --power: #6B5DEF;
   }
 
   .dark {
@@ -97,6 +98,10 @@
     @apply fixed top-14 left-0 w-64 pb-14 h-full max-h-full border-r-1 border-border/40 overflow-y-auto flex flex-col;
   }
 
+  .sidePanelTop {
+    @apply flex items-center gap-2 w-full min-h-[3.2rem] pl-5 pr-5 border-b-1 border-border/50;
+  }
+
   .sidebarButton {
     @apply flex items-center w-full p-1 pl-2 pr-2 gap-2 text-xs text-gray-300 hover:bg-[var(--gray-a2)] rounded-md transition-all duration-500 min-w-max;
   }
@@ -130,5 +135,26 @@
 
   .powerShadow {
     box-shadow: 0px 0px 3px 0px #6B5DEF;
+  }
+
+  .topPath {
+    @apply flex fixed top-14 left-64 pr-64 w-full bg-accent/20 z-20 backdrop-blur-xl items-center gap-3 border-b-1 min-h-[3.2rem] pl-5 pr-5 border-border/50 text-foreground/70;
+  }
+
+  .bottomPath {
+    @apply flex fixed bottom-0 left-64 pr-64 w-full bg-background z-20 backdrop-blur-xl gap-3 border-t-1 min-h-[2rem] border-border/50 text-foreground/70;
+  }
+
+  .closedRoute {
+    @apply flex items-center gap-1 p-1.5 pl-5 pr-5 cursor-pointer hover:bg-[#26262626];
+  }
+
+  .openRoute {
+    @apply flex items-center gap-2 p-1.5 pl-5 pr-5 cursor-pointer bg-[#31313131] relative
+  }
+
+  .openRoute::before {
+    content: "";
+    @apply absolute top-0 left-0 h-full w-0.5 bg-power;
   }
 }
