@@ -1,8 +1,7 @@
 
 import { type User } from "@supabase/auth-helpers-nextjs"
 import { type FuncRes } from "@/app/actions/deno/projects/get"
-import { type DeploymentOptions } from "@/app/actions/deno/deployments/create"
-
+import DeploymentOptions from "@/types/deploymentOptions"
 
 type Props = {
 	func: FuncRes,

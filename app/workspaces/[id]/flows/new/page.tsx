@@ -41,7 +41,7 @@ export default async function NewFlow({ params }: { params: { id: string } }) {
                     <div className="pt-14">
                         <div className="p-5">
                             <Text color="gray" className="flex gap-2 items-center">
-                                You can't create more than {flows.length} flows in the {workspace.plan} plan. 
+                                You can not create more than {flows.length} flows in the {workspace.plan} plan. 
                                 <Link href={`/workspace/${workspace.id}/flows`} className="text-power">
                                     Go back
                                 </Link>

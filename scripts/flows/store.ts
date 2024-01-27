@@ -1,12 +1,17 @@
+"use client"
+
 /*
-    I don't need to say that this store is use only from client-side components ;).
     It's used to keep the changed flow synced across all components without the need to save it
     to the database or redeploy it.
-    useful for type testing, prevent unneeded deployments tries, 
+    useful for type testing, prevent unneeded deployments tries,
     and real-time data update across components (maybe soon between team members too).
+
+    JUST NEVER CHANGE THIS ONE
 */
 
-import flowEvents from "@/scripts/flows/events";
+import pushError from "@/components/workspaces/flows/pushError";
+import pushSuccess from "@/components/workspaces/flows/pushSuccess";
+import { Events } from "@/scripts/flows/events";
 import Flow, { Route } from "@/types/flow";
 import Methods from "@/types/methods";
 
@@ -15,91 +20,75 @@ type StoreConstructorProps = {
     initNew: boolean
 };
 
-interface ChangeRoutePath {
-    type: "change-path", 
-    route: Route, 
-    newPath: string 
-}
-
-interface ChangeRouteMethod {
-    type: "change-method", 
-    route: Route, 
-    newMethod: Methods
-}
-
-type EditRouteProps = ChangeRoutePath | ChangeRouteMethod;
-
-const listeners: string[] = [];
-const versions: Flow[] = [];
-
 class FlowStore {
 
     flow: Flow;
-    store = store;
+    events: Events;
 
     constructor(options: StoreConstructorProps) {
-
         const { flow, initNew } = options;
 
-        if (initNew) {
-            origin.set(flow, Date.now());
+        if (typeof window === "undefined") {
             this.flow = flow;
-        } else {
-            this.flow = store.get(flow.id);
-        }
-
-        flowEvents.on(this.events.channelId("flow-changed"), (flow: Flow) => {
-            versions.push(flow);
-            this.flow = flow;
-            store.set(flow);
-        })
-
-    }
-
-    undoChange() {
-        if (versions.length < 1) {
+            this.events = new Events(this.flow.id);
             return;
         }
-        versions.pop();
-        this.flow = versions[versions.length - 1] || this.flow
-        this.events.pushFlow();
-    }
 
-    events = {
-
-        push: (channel: string, msg?: unknown) => {
-            flowEvents.emit(`${this.flow.id}-${channel}`, msg);
-        },
- 
-        channelId: (channel: string) => ( `${this.flow.id}-${channel}` ),
-
-        addListener: (channel: string, component: string, cb: Function) => {
-            
-            const isListening = (listeners.indexOf(component) === -1) ? false : true;
-            
-            if (isListening) {
-                return false;
-            }
-            
-            flowEvents.on(this.events.channelId(channel), (msg: unknown) => {
-                cb(msg);
-            })
-
-        },
-
-        pushFlow: () => {
-            store.set(this.flow);
-            this.events.push("flow-changed", this.flow);
+        if (initNew) {
+            origin.set(flow, flow.stateUpdated);
         }
 
+        const sessionFlow = session.get(flow.id);
+        const originDate = flow.stateUpdated;
+        const sessionDate = sessionFlow.stateUpdated;
+
+        // Choose which version of the flow is newer.
+        if (originDate > sessionDate) {
+            this.flow = flow;
+        } else {
+            this.flow = sessionFlow;
+        }
+
+        this.events = new Events(this.flow.id);
+    }
+
+    refresh() {
+        const originFlow = origin.get(this.flow.id);
+        const sessionFlow = session.get(this.flow.id);
+        if (!originFlow || !sessionFlow) {
+            pushError("Error: Can't read flow data");
+            return;
+        }
+        if (originFlow.stateUpdated > sessionFlow.stateUpdated) {
+            this.flow = originFlow;
+            return;
+        }
+        this.flow = sessionFlow;
+    }
+
+    // --- Changes (make, undo, and is change[d])
+
+    // Push a flow change and update the session. 
+    // Called everytime a change is made to the flow.
+    pushFlow(flow: Flow) {
+        session.set(flow);
+        this.events.push("flowChanged", flow);
     }
 
     // get if the flow has been changed or updated
     isChanged(): boolean {
         const latest = JSON.stringify(this.flow);
-        const original = JSON.stringify(origin.get(this.flow.id).data);
+        const original = JSON.stringify(origin.get(this.flow.id));
         return (original === latest) ? true : false;
     }
+
+    // Make changes to the flow.
+    makeChange(action: Function) {
+        action();
+        this.pushFlow(this.flow);
+    }
+
+    // --- Flow Routes basic logic
 
     routes = {
 
@@ -107,80 +96,85 @@ class FlowStore {
             return this.flow?.payload?.routes;
         },
 
-        getOne: (options: { path?: string, method?: string }): Route[] | false => {
+        getOne: (id: string): Route[] | false => {
+            const wantedRoutes = this.flow?.payload?.routes
+                .filter(route => route.id === id);
 
+            return (!wantedRoutes || wantedRoutes.length < 1) ? false : wantedRoutes;
+        },
+
+        filter: (options: { path?: string, method?: string }): Route[] | false => {
             const { path, method } = options;
 
-            const wantedRoutes = this.flow?.payload?.routes
-                .filter(route => route.path === path || route.path)
-                .filter(route => route.method === method || route.method)
-            ;
+            const wantedPaths = this.flow?.payload?.routes
+                .filter(route => route.path === String(path || route.path));
+            const wantedRoutes = wantedPaths
+                .filter(route => route.method === String(method || route.method));
 
-            return (!wantedRoutes || wantedRoutes.length < 0) ? false : wantedRoutes;
-
+            return (!wantedRoutes || wantedRoutes.length < 1) ? false : wantedRoutes;
         },
 
         areChanged: () => {
-            const originalRoutes = origin.get(this.flow.id)?.data?.payload?.routes;
+            const originalRoutes = origin.get(this.flow.id)?.payload?.routes;
             const latestRoutes = this.flow?.payload.routes;
         },
 
-        editRoute: (options: EditRouteProps) => {
+        editRoute: (options: { id: string, newPath: string, newMethod: Methods }) => {
+            const { id, newPath, newMethod } = options;
 
-            const { type, route } = options;
+            const wantedRoute = this.routes.getOne(id);
+            const flow = this.flow;
+            const { payload } = flow;
 
-            const { path, method } = route;
-            const wantedRoute = this.routes.getOne({ path, method });
-            const flowP = this.flow.payload;
-            
             if (!wantedRoute) {
-                return false;
+                return pushError("")
             }
 
-            if (type === "change-path") {
-                flowP.routes[flowP.routes.indexOf(wantedRoute[0])].path = options.newPath;
-                this.flow.payload = flowP;
-                this.events.push("routes-changed", `Changed path to ${options.newPath}`);
+            const doesExist = this.routes.filter({
+                path: newPath,
+                method: newMethod
+            });
+
+            if (doesExist) {
+                return pushError(`a route ${newMethod}:${newPath} already exist`);
             }
 
-            if (type === "change-method") {
-                flowP.routes[flowP.routes.indexOf(wantedRoute[0])].path = options.newMethod;
-                this.flow.payload = flowP;
-                this.events.push("routes-changed", `Changed path to ${options.newMethod}`);
-            }
-
-            this.events.pushFlow();
-
+            this.makeChange(() => {
+                payload.routes[payload.routes.indexOf(wantedRoute[0])].path = newPath;
+                payload.routes[payload.routes.indexOf(wantedRoute[0])].method = newMethod;
+                flow.payload = payload;
+                this.events.push("routesChanged", payload.routes);
+                pushSuccess("Edited route");
+            })
         },
 
         deleteRoute: (route: Route) => {
-            
-            const { path, method } = route;
-            const wantedRoute = this.routes.getOne({ path, method });
-            const flowP = this.flow.payload;
+            const { id } = route;
+            const wantedRoute = this.routes.getOne(id);
+            const flow = this.flow;
+            const { payload } = flow;
 
-            if (!wantedRoute) {
-                return false;
-            }
+            if (!wantedRoute) { return false; }
 
-            delete flowP.routes[flowP.routes.indexOf(wantedRoute[0])]
-            this.flow.payload;
-            this.events.push("routes-changed", `Deleted route`);
-            this.events.pushFlow();
-
+            this.makeChange(() => {
+                delete payload.routes[payload.routes.indexOf(wantedRoute[0])];
+                flow.payload = payload;
+                this.events.push("routesChanged", flow.payload.routes);
+                pushSuccess("Deleted route");
+            })
         }
 
     }
 
 }
 
-const store = {
+const session = {
 
     set: (flow: Flow, date?: number): { success: boolean, data?: Flow } => {
         try {
-            flow.stateUpdated =  date || Date.now();
+            flow.stateUpdated = date || Date.now();
             sessionStorage.setItem(
-                `flow-store-${flow.id}`, 
+                `flow-session-${flow.id}`,
                 JSON.stringify(flow)
             );
             return { success: true };
@@ -191,9 +185,13 @@ const store = {
     },
 
     get: (id: string): Flow => {
-        
-        const data = sessionStorage.getItem(`flow-store-${id}`);
-        return JSON.parse(data || "{}");
+
+        const data = sessionStorage.getItem(`flow-session-${id}`);
+        if (data) {
+            return JSON.parse(data);
+        }
+
+        return origin.get(id) as Flow;
 
     },
 
@@ -201,50 +199,44 @@ const store = {
 
 const origin = {
 
-    set: (flow: Flow, date?: number): { success: boolean, data?: Flow } => {
+    set: (flow: Flow, date?: number): void => {
         try {
-            flow.stateUpdated =  date || Date.now();
+            flow.stateUpdated = date || Date.now();
             sessionStorage.setItem(
-                `flow-origin-${flow.id}`, 
+                `flow-origin-${flow.id}`,
                 JSON.stringify(flow)
             );
-            return { success: true };
+            return;
         }
         catch (err: unknown) {
-            return { success: false };
+            return;
         }
     },
 
-    get: (id: string): { success: boolean, data?: Flow } => {
-        const data = sessionStorage.getItem(`flow-origing-${id}`);
-        if (data) {
-            return {
-                success: true,
-                data: JSON.parse(data)
-            }
+    get: (id: string): Flow | null => {
+        const data = sessionStorage.getItem(`flow-origin-${id}`);
+        try {
+            return JSON.parse(data as string);
+        } catch (err: unknown) {
+            return null;
         }
-        return {
-            success: false
-        };
     },
 
-    update: (flow: Flow): { success: boolean, data?: Flow } => {
+    update: (flow: Flow): void => {
         const original = origin.get(flow.id);
 
-        if (!original.success) {
-            return original;
+        if (!original) {
+            return;
         }
 
-        const originDate: number = original?.data?.stateUpdated || 0;
+        const originDate: number = original?.stateUpdated || 0;
         const newDate = Date.now();
 
         if (originDate < newDate) {
             return origin.set(flow, newDate);
         }
 
-        return {
-            success: false
-        };
+        return;
     }
 
 };

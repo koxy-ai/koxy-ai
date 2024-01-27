@@ -27,7 +27,7 @@ const mainActions = [
     {
         icon: "route",
         title: "API flows",
-        path: "/flows"
+        path: "/flows/111"
     },
     {
         icon: "cloud-code",

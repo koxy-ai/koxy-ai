@@ -1,7 +1,7 @@
 import getWorkspace from "@/app/actions/workspaces/get"
 import Workspace from "@/types/workspace"
 import Icon from "@/components/Icon"
-import { Badge, Text } from "@radix-ui/themes"
+import { Text } from "@radix-ui/themes"
 import Flow from "@/types/flow"
 import ClientStore from "./ClientStore"
 
@@ -13,10 +13,13 @@ export default async function WorkspaceHome({ params }: { params: { id: string, 
         id: "111",
         name: "this-is-flow",
         status: "111",
+        stateUpdated: Date.now(),
         payload: {
             routes: [
                 {
                     method: "get",
+                    id: "8ry9894r",
+                    updatedAt: Date.now(),
                     path: "/hello",
                     code: [
                         {

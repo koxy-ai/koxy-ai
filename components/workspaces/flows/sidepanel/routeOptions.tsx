@@ -4,36 +4,25 @@ import FlowStore from "@/scripts/flows/store";
 import { Route } from "@/types/flow";
 import { ReactNode } from "react";
 
-export function OptionsRoot({ children }: { children: ReactNode }) {
+export function OptionsRoot({ children, store, route }: { children: ReactNode, store: FlowStore, route: Route }) {
 
     return (
         <ContextMenu>
             <ContextMenuTrigger>
                 {children}
             </ContextMenuTrigger>
+            <ContextMenuContent>
+                <ContextMenuItem onClick={() => store.events.push("openRouteEditor", route)}>
+                    <Option
+                        title="Edit route"
+                        icon="edit"
+                    />
+                </ContextMenuItem>
+                <ContextMenuItem onClick={() => store.events.push("openRouteDelete", route)}>
+                    <Option title="Delete" icon="trash" />
+                </ContextMenuItem>
+            </ContextMenuContent>
         </ContextMenu>
-    )
-
-}
-
-export function RouteOptions({ route, store }: { route: Route, store: FlowStore }) {
-
-    const editPath = () => {
-
-    }
-
-    return (
-        <ContextMenuContent>
-            <ContextMenuItem>
-                <Option title="Change path" icon="edit" />
-            </ContextMenuItem>
-            <ContextMenuItem>
-                <Option title="Change method" icon="tool" />
-            </ContextMenuItem>
-            <ContextMenuItem>
-                <Option title="Delete" icon="trash" />
-            </ContextMenuItem>
-        </ContextMenuContent>
     )
 
 }

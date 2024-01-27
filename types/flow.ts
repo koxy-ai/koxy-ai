@@ -6,6 +6,8 @@ export type RouteCode = {
 };
 
 export type Route = {
+    id: string,
+    updatedAt: number,
     method: Methods,
     path: string,
     code: RouteCode[]
@@ -19,7 +21,7 @@ interface Flow {
         routes: Route[],
         nodes: any[]
     },
-    stateUpdated?: number
+    stateUpdated: number
 };
 
 export default Flow;
