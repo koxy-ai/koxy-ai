@@ -142,7 +142,7 @@
   }
 
   .bottomPath {
-    @apply flex fixed bottom-0 left-64 pr-64 w-full bg-background z-20 backdrop-blur-xl gap-3 border-t-1 min-h-[2rem] border-border/50 text-foreground/70;
+    @apply flex fixed bottom-0 left-64 pr-64 w-full bg-background z-20 backdrop-blur-xl gap-3 border-t-1 min-h-[1.6rem] border-border/50 text-foreground/70;
   }
 
   .closedRoute {

@@ -54,7 +54,7 @@ export default function WorkspaceHead({ workspace, title, description, icon, chi
 function UpgradeMessage() {
     return (
         <div className="p-2 w-full flex items-center justify-center text-black border-b-1 text-sm bg-power">
-            You're working on a free plan. consider upgrading for more features
+            You are working on a free plan. consider upgrading for more features
         </div>
     )
 }

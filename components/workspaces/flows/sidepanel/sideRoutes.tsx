@@ -1,36 +1,70 @@
 "use client"
 
 import Icon from "@/components/Icon";
-import { Text, Badge, IconButton } from "@radix-ui/themes";
-import { MouseEventHandler, ReactNode, useState } from "react";
+import { Text, Badge } from "@radix-ui/themes";
+import { MouseEventHandler, ReactNode, useEffect, useState } from "react";
 import Flow, { RouteCode } from "@/types/flow";
 import FlowStore from "@/scripts/flows/store";
-import { OptionsRoot, RouteOptions } from "./routeOptions";
+import { OptionsRoot } from "./routeOptions";
 import { Route } from "@/types/flow";
+import { methodsColors } from "@/types/methods";
+import EditRouteDialog from "@/components/workspaces/flows/sidepanel/editRoute";
+import DeleteRouteDialog from "./deleteRoute";
+import SearchRoutes from "./searchRoutes";
+
+type RouteFolderProps = {
+    children: ReactNode,
+    route: Route,
+    store: FlowStore,
+    onClick: MouseEventHandler
+}
+
+const routesState: any = {};
 
 export default function SideRoutes({ flow, store }: { flow: Flow, store: FlowStore }) {
 
-    const routes = flow?.payload?.routes || [];
+    const [routes, setRoutes] = useState(flow?.payload?.routes);
+    const [ forceUpdate, setForceUpdate ] = useState(false);
+
+    const updateRoutes = (newRoutes: Route[]) => {
+        flow.payload.routes = newRoutes;
+        setRoutes(newRoutes);
+        setForceUpdate(prev => !prev);
+    };
+
+    store.events.addListener(
+        "routesChanged",
+        "sideRoutes",
+        updateRoutes
+    );
+
+    if (!routesState[flow.id]) {
+        routesState[flow.id] = {};
+    }
 
     return (
         <>
 
             <div className="flex items-center border-border/40 p-5 pt-3 pb-3 gap-2 mt-2 mb-1">
-                <div className="flex items-center justify-center cursor-pointer pl-0.5 opacity-60 hover:opacity-100">
+                <div className="flex items-center justify-center cursor-pointer pl-0.5 opacity-80 hover:opacity-100">
                     <Icon id="plus" size="small" />
                 </div>
                 <div className="flex items-center gap-2 ml-1">
                     <Icon id="search" options={{ color: "gray" }} size="small" />
-                    <input
-                        className="text-xs bg-transparent outline-0 border-0 opacity-70 focus:opacity-100 mt-0.5"
-                        placeholder="Search routes..."
-                    />
+                    <SearchRoutes />
                 </div>
             </div>
 
+            <EditRouteDialog store={store} />
+            <DeleteRouteDialog store={store} />
+
             {routes.map(route => (
-                <div key={`${route.path}-${route.method}`}>
-                    <Route route={route} store={store} />
+                <div 
+                    id={`${route.method}:${route.path.toLocaleLowerCase().replace(" ", "-")}-folder`}
+                    className="routeFolder"
+                    key={`${route.path}-${route.method}-${Date.now()}`}
+                >
+                    <Route flowId={flow.id} route={route} store={store} />
                 </div>
             ))}
 
@@ -39,19 +73,20 @@ export default function SideRoutes({ flow, store }: { flow: Flow, store: FlowSto
 
 }
 
-function Route({ route, store }: { route: Route, store: FlowStore }) {
+function Route({ flowId, route, store }: { flowId: string, route: Route, store: FlowStore }) {
 
     const { method, path } = route;
-    const [open, setOpen] = useState<boolean>(false);
+    const [open, setOpen] = useState<boolean>((routesState[flowId] as any)[route.id] || false);
 
     const toggleOpen = () => {
-        console.log("toggeling")
-        setOpen((open) ? false : true);
+        const newState = (open) ? false : true;
+        routesState[flowId][route.id] = newState;
+        setOpen(newState);
     }
 
     if (!open) {
         return (
-            <ClosedRoute onClick={() => toggleOpen()}>
+            <ClosedRoute route={route} store={store} onClick={() => toggleOpen()}>
                 <>
                     <div className="flex items-center gap-2 w-full">
                         <Icon id="chevron-right" options={{ color: "gray" }} />
@@ -59,7 +94,6 @@ function Route({ route, store }: { route: Route, store: FlowStore }) {
                         <Text color="gray" size="2">{path}</Text>
                     </div>
                     <Method method={method} />
-                    <RouteOptions route={route} store={store} />
                 </>
             </ClosedRoute>
         )
@@ -67,7 +101,7 @@ function Route({ route, store }: { route: Route, store: FlowStore }) {
 
     return (
         <>
-            <OpenRoute onClick={() => toggleOpen()}>
+            <OpenRoute route={route} store={store} onClick={() => toggleOpen()}>
                 <>
                     <div className="flex items-center gap-2 w-full">
                         <Icon id="chevron-down" options={{ color: "gray" }} />
@@ -75,7 +109,6 @@ function Route({ route, store }: { route: Route, store: FlowStore }) {
                         <Text size="2">{path}</Text>
                     </div>
                     <Method method={method} />
-                    <RouteOptions route={route} store={store} />
                 </>
             </OpenRoute>
             <SubRoute>
@@ -91,44 +124,37 @@ function Route({ route, store }: { route: Route, store: FlowStore }) {
 
 }
 
-function ClosedRoute({ children, onClick }: { children: ReactNode, onClick: MouseEventHandler }) {
+function ClosedRoute({ route, store, children, onClick }: RouteFolderProps) {
 
     return (
-        <OptionsRoot>
-            <div onClick={onClick} className="closedRoute">
-                {children}
-            </div>
-        </OptionsRoot>
+        <>
+            <OptionsRoot route={route} store={store} >
+                <div onClick={onClick} className="closedRoute">
+                    {children}
+                </div>
+            </OptionsRoot>
+        </>
     )
 
 }
 
-function OpenRoute({ children, onClick }: { children: ReactNode, onClick: MouseEventHandler }) {
+function OpenRoute({ route, store, children, onClick }: RouteFolderProps) {
 
     return (
-        <OptionsRoot>
-            <div onClick={onClick} className="openRoute">
-                {children}
-            </div>
-        </OptionsRoot>
+        <>
+            <OptionsRoot route={route} store={store} >
+                <div onClick={onClick} className="openRoute">
+                    {children}
+                </div>
+            </OptionsRoot>
+        </>
     )
 
 }
 
 function Method({ method }: { method: string }) {
 
-    const methods: Record<string, string> = {
-        get: "green",
-        post: "orange",
-        put: "blue",
-        patch: "purple",
-        delete: "red",
-        head: "grass",
-        options: "pink"
-    };
-
-    const color = methods[method];
-
+    const color = methodsColors[method];
     return <Badge color={color as any}>{method}</Badge>
 
 }

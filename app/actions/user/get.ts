@@ -1,12 +1,17 @@
 "use server"
 
 import supabaseServer from "@/app/actions/supabaseServer"
-import { type User } from "@supabase/supabase-js"
+import { UserResponse, type User } from "@supabase/supabase-js"
+import { redirect } from "next/navigation"
 
 export default async function getUser() {
 
 	const supabase = supabaseServer()
-	const { data: {user} }: any = await supabase.auth.getUser()
+	const { data: {user} }: UserResponse = await supabase.auth.getUser()
+
+	if (!user) {
+		return redirect("/auth");
+	}
 
     return user as User
 
