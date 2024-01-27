@@ -1,10 +1,13 @@
 import FlowStore from "@/scripts/flows/store";
 import { toast } from "sonner"
 
-export default function pushSuccess(msg: string) {
+export default function pushSuccess(msg: string, store: FlowStore) {
     toast.success(msg, {
-        cancel: {
-            label: "Close",
+        action: {
+            label: "Undo",
+            onClick: () => {
+                store.undoChange();
+            }
         }
     });
     return false;

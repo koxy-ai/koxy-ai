@@ -10,6 +10,7 @@ import { Route } from "@/types/flow";
 import { methodsColors } from "@/types/methods";
 import EditRouteDialog from "@/components/workspaces/flows/sidepanel/editRoute";
 import DeleteRouteDialog from "./deleteRoute";
+import SearchRoutes from "./searchRoutes";
 
 type RouteFolderProps = {
     children: ReactNode,
@@ -50,10 +51,7 @@ export default function SideRoutes({ flow, store }: { flow: Flow, store: FlowSto
                 </div>
                 <div className="flex items-center gap-2 ml-1">
                     <Icon id="search" options={{ color: "gray" }} size="small" />
-                    <input
-                        className="text-xs bg-transparent outline-0 border-0 opacity-70 focus:opacity-100 mt-0.5"
-                        placeholder="Search routes..."
-                    />
+                    <SearchRoutes />
                 </div>
             </div>
 
@@ -61,7 +59,11 @@ export default function SideRoutes({ flow, store }: { flow: Flow, store: FlowSto
             <DeleteRouteDialog store={store} />
 
             {routes.map(route => (
-                <div key={`${route.path}-${route.method}-${Date.now()}`}>
+                <div 
+                    id={`${route.method}:${route.path.toLocaleLowerCase().replace(" ", "-")}-folder`}
+                    className="routeFolder"
+                    key={`${route.path}-${route.method}-${Date.now()}`}
+                >
                     <Route flowId={flow.id} route={route} store={store} />
                 </div>
             ))}
@@ -153,7 +155,6 @@ function OpenRoute({ route, store, children, onClick }: RouteFolderProps) {
 function Method({ method }: { method: string }) {
 
     const color = methodsColors[method];
-
     return <Badge color={color as any}>{method}</Badge>
 
 }

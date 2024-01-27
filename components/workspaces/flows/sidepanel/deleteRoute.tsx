@@ -5,7 +5,7 @@ import { DialogFooter } from "@/components/ui/dialog"
 import { Route } from "@/types/flow";
 import { Button } from "@/components/ui/button";
 import FlowStore from "@/scripts/flows/store";
-import EditDialog from "./EditDialog";
+import EditDialog from "./editDialog";
 
 export default function DeleteRouteDialog({ store }: { store: FlowStore }) {
 

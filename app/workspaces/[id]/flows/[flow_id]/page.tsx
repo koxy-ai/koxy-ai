@@ -3,7 +3,7 @@ import Workspace from "@/types/workspace"
 import Icon from "@/components/Icon"
 import { Text } from "@radix-ui/themes"
 import Flow from "@/types/flow"
-import ClientStore from "./ClientStore"
+import ClientStore from "./clientStore"
 
 export default async function WorkspaceHome({ params }: { params: { id: string, flow_id: string } }) {
 

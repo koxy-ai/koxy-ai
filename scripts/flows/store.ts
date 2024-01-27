@@ -1,5 +1,3 @@
-"use client"
-
 /*
     It's used to keep the changed flow synced across all components without the need to save it
     to the database or redeploy it.
@@ -14,6 +12,7 @@ import pushSuccess from "@/components/workspaces/flows/pushSuccess";
 import { Events } from "@/scripts/flows/events";
 import Flow, { Route } from "@/types/flow";
 import Methods from "@/types/methods";
+import Versions from "./versions";
 
 type StoreConstructorProps = {
     flow: Flow,
@@ -24,6 +23,7 @@ class FlowStore {
 
     flow: Flow;
     events: Events;
+    versions: Versions;
 
     constructor(options: StoreConstructorProps) {
         const { flow, initNew } = options;
@@ -31,6 +31,7 @@ class FlowStore {
         if (typeof window === "undefined") {
             this.flow = flow;
             this.events = new Events(this.flow.id);
+            this.versions = new Versions();
             return;
         }
 
@@ -49,7 +50,10 @@ class FlowStore {
             this.flow = sessionFlow;
         }
 
+        this.versions = new Versions();
+        this.versions.makeVerion(this.flow);
         this.events = new Events(this.flow.id);
+        this.pushFlow(this.flow);
     }
 
     refresh() {
@@ -66,13 +70,15 @@ class FlowStore {
         this.flow = sessionFlow;
     }
 
-    // --- Changes (make, undo, and is change[d])
+    // --- Changes (make, undo, push, and is)
 
-    // Push a flow change and update the session. 
+    // Push a flow change and update the session.
     // Called everytime a change is made to the flow.
     pushFlow(flow: Flow) {
+        this.flow = flow;
         session.set(flow);
         this.events.push("flowChanged", flow);
+        this.events.push("routesChanged", flow.payload.routes);
     }
 
     // get if the flow has been changed or updated
@@ -84,8 +90,15 @@ class FlowStore {
 
     // Make changes to the flow.
     makeChange(action: Function) {
+        this.versions.makeVerion(this.flow);
         action();
         this.pushFlow(this.flow);
+    }
+
+    undoChange() {
+        this.versions.pop();
+        const prev = this.versions.undoLatest();
+        this.pushFlow(prev);
     }
 
     // --- Flow Routes basic logic
@@ -106,10 +119,10 @@ class FlowStore {
         filter: (options: { path?: string, method?: string }): Route[] | false => {
             const { path, method } = options;
 
-            const wantedPaths = this.flow?.payload?.routes
-                .filter(route => route.path === String(path || route.path));
-            const wantedRoutes = wantedPaths
-                .filter(route => route.method === String(method || route.method));
+            const wantedRoutes = this.flow?.payload?.routes
+                .filter(route => 
+                    route.path === String(path || route.path) && 
+                    route.method === String(method || route.method));
 
             return (!wantedRoutes || wantedRoutes.length < 1) ? false : wantedRoutes;
         },
@@ -126,14 +139,12 @@ class FlowStore {
             const flow = this.flow;
             const { payload } = flow;
 
-            if (!wantedRoute) {
-                return pushError("")
-            }
+            if (!wantedRoute) { return pushError(""); }
 
             const doesExist = this.routes.filter({
                 path: newPath,
                 method: newMethod
-            });
+            })
 
             if (doesExist) {
                 return pushError(`a route ${newMethod}:${newPath} already exist`);
@@ -143,8 +154,7 @@ class FlowStore {
                 payload.routes[payload.routes.indexOf(wantedRoute[0])].path = newPath;
                 payload.routes[payload.routes.indexOf(wantedRoute[0])].method = newMethod;
                 flow.payload = payload;
-                this.events.push("routesChanged", payload.routes);
-                pushSuccess("Edited route");
+                pushSuccess("Edited route", this);
             })
         },
 
@@ -159,8 +169,7 @@ class FlowStore {
             this.makeChange(() => {
                 delete payload.routes[payload.routes.indexOf(wantedRoute[0])];
                 flow.payload = payload;
-                this.events.push("routesChanged", flow.payload.routes);
-                pushSuccess("Deleted route");
+                pushSuccess("Deleted route", this);
             })
         }
 
@@ -173,7 +182,7 @@ const session = {
     set: (flow: Flow, date?: number): { success: boolean, data?: Flow } => {
         try {
             flow.stateUpdated = date || Date.now();
-            sessionStorage.setItem(
+            localStorage.setItem(
                 `flow-session-${flow.id}`,
                 JSON.stringify(flow)
             );
@@ -185,14 +194,12 @@ const session = {
     },
 
     get: (id: string): Flow => {
-
-        const data = sessionStorage.getItem(`flow-session-${id}`);
+        const data = localStorage.getItem(`flow-session-${id}`);
         if (data) {
             return JSON.parse(data);
         }
 
         return origin.get(id) as Flow;
-
     },
 
 }

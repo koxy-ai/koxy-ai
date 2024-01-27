@@ -13,7 +13,7 @@ import { Route } from "@/types/flow";
 import { Button } from "@/components/ui/button";
 import Methods, { methods } from "@/types/methods";
 import FlowStore from "@/scripts/flows/store";
-import EditDialog from "./EditDialog";
+import EditDialog from "./editDialog";
 
 export default function EditRouteDialog({ store }: { store: FlowStore }) {
 
