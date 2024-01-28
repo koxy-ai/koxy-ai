@@ -9,8 +9,6 @@ import Paths from "@/components/global/Paths"
 import Cards from "./cards"
 import { defaultLinks } from "@/components/header/HeadLink"
 
-export const runtime = 'edge';
-
 export default async function Workspaces() {
 
     const user = await getUser();
