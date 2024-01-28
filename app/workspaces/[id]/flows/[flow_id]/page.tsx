@@ -5,6 +5,8 @@ import { Text } from "@radix-ui/themes"
 import Flow from "@/types/flow"
 import ClientStore from "./clientStore"
 
+export const runtime = 'edge';
+
 export default async function WorkspaceHome({ params }: { params: { id: string, flow_id: string } }) {
 
     const { id, flow_id } = params;

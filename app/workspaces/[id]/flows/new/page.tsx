@@ -9,6 +9,8 @@ import Icon from "@/components/Icon";
 import getUser from "@/app/actions/user/get";
 import Link from "next/link";
 
+export const runtime = 'edge';
+
 const allowed: { free: number, pro: number } = {
     free: 3,
     pro: 10
