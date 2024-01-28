@@ -6,6 +6,8 @@ import WorkspaceHead from "@/components/workspaces/head"
 import { Button } from "@/components/ui/button"
 import Icon from "@/components/Icon"
 
+export const runtime = 'edge';
+
 export default async function WorkspaceHome({ params }: { params: { id: string } }) {
 
     const id = params.id;

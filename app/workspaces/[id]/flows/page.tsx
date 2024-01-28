@@ -9,6 +9,8 @@ import listFlows from "@/app/actions/workspaces/listFlows"
 import FlowsCards from "./cards"
 import Link from "next/link"
 
+export const runtime = 'edge';
+
 export default async function WorkspaceHome({ params }: { params: { id: string } }) {
 
     const id = params.id;
