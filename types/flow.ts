@@ -1,16 +1,17 @@
-import Methods from "./methods";
-
-export type RouteCode = {
-    name: string,
-    content: string
-};
+import FlowMap from "./map";
 
 export type Route = {
     id: string,
     updatedAt: number,
-    method: Methods,
+    methods: {
+        get?: FlowMap,
+        post?: FlowMap,
+        put?: FlowMap,
+        delete?: FlowMap,
+        patch?: FlowMap,
+        head?: FlowMap
+    },
     path: string,
-    code: RouteCode[]
 };
 
 interface Flow {
@@ -19,7 +20,7 @@ interface Flow {
     status: string,
     payload: {
         routes: Route[],
-        nodes: any[]
+        env: Record<string, string>
     },
     stateUpdated: number
 };

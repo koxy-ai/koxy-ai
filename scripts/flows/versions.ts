@@ -28,7 +28,7 @@ class Versions {
     undoLatest(): Flow {
         const versions = this.get();
         if (versions.length < 2) {
-            return versions[versions.length - 1];
+            return versions[0];
         }
         return versions[versions.length - 1];
     }

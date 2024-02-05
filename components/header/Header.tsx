@@ -20,7 +20,7 @@ export default function Header({ user, links, children, activeLink }: Props) {
     activeLink = activeLink || "NAN";
 
     return (
-        <header className="fixed top-0 z-50 w-full border-b border-border/40 bg-background/90 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60 flex items-center h-14 pl-5 pr-5">
+        <header className="fixed top-0 z-50 w-full border-b border-border/70 bg-background/90 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60 flex items-center h-14 pl-5 pr-5">
             <div className="flex items-center gap-1 mr-9 min-w-max">
                 <img src="/koxy-latest.png" className="w-[6.5rem]" />
             </div>

@@ -4,6 +4,12 @@
     useful for type testing, prevent unneeded deployments tries,
     and real-time data update across components (maybe soon between team members too).
 
+    Components in the editor can communicate together in real time using the store events.
+    It's an easy way to keep the flow in sync across all components without having to save it to the database.
+
+    Most different components can listen to the store events and update their state.
+    and we keep track of the state update date to keep it in sync between team members and components in real-time.
+
     JUST NEVER CHANGE THIS ONE
 */
 
@@ -11,13 +17,14 @@ import pushError from "@/components/workspaces/flows/pushError";
 import pushSuccess from "@/components/workspaces/flows/pushSuccess";
 import { Events } from "@/scripts/flows/events";
 import Flow, { Route } from "@/types/flow";
-import Methods from "@/types/methods";
 import Versions from "./versions";
 
 type StoreConstructorProps = {
     flow: Flow,
     initNew: boolean
 };
+
+export type HttpMethod = 'get' | 'post' | 'put' | 'delete' | 'patch' | 'head';
 
 class FlowStore {
 
@@ -75,8 +82,10 @@ class FlowStore {
     // Push a flow change and update the session.
     // Called everytime a change is made to the flow.
     pushFlow(flow: Flow) {
+        const updateAt = Date.now();
+        flow.stateUpdated = updateAt;
         this.flow = flow;
-        session.set(flow);
+        session.set(flow, updateAt);
         this.events.push("flowChanged", flow);
         this.events.push("routesChanged", flow.payload.routes);
     }
@@ -96,7 +105,6 @@ class FlowStore {
     }
 
     undoChange() {
-        this.versions.pop();
         const prev = this.versions.undoLatest();
         this.pushFlow(prev);
     }
@@ -116,13 +124,16 @@ class FlowStore {
             return (!wantedRoutes || wantedRoutes.length < 1) ? false : wantedRoutes;
         },
 
-        filter: (options: { path?: string, method?: string }): Route[] | false => {
+        filter: (options: { path?: string, method?: HttpMethod }): Route[] | false => {
             const { path, method } = options;
 
-            const wantedRoutes = this.flow?.payload?.routes
-                .filter(route => 
-                    route.path === String(path || route.path) && 
-                    route.method === String(method || route.method));
+            let wantedRoutes = this.flow?.payload?.routes
+                .filter(route => route.path === String(path || route.path))
+
+            if (method) {
+                wantedRoutes = wantedRoutes
+                    .filter(route => route.methods[method]);
+            }
 
             return (!wantedRoutes || wantedRoutes.length < 1) ? false : wantedRoutes;
         },
@@ -130,10 +141,11 @@ class FlowStore {
         areChanged: () => {
             const originalRoutes = origin.get(this.flow.id)?.payload?.routes;
             const latestRoutes = this.flow?.payload.routes;
+            return (JSON.stringify(originalRoutes) === JSON.stringify(latestRoutes)) ? false : true;
         },
 
-        editRoute: (options: { id: string, newPath: string, newMethod: Methods }) => {
-            const { id, newPath, newMethod } = options;
+        editRoute: (options: { id: string, newPath: string }) => {
+            const { id, newPath } = options;
 
             const wantedRoute = this.routes.getOne(id);
             const flow = this.flow;
@@ -143,16 +155,15 @@ class FlowStore {
 
             const doesExist = this.routes.filter({
                 path: newPath,
-                method: newMethod
             })
 
             if (doesExist) {
-                return pushError(`a route ${newMethod}:${newPath} already exist`);
+                return pushError(`a route ${newPath} already exist`);
             }
 
             this.makeChange(() => {
                 payload.routes[payload.routes.indexOf(wantedRoute[0])].path = newPath;
-                payload.routes[payload.routes.indexOf(wantedRoute[0])].method = newMethod;
+                payload.routes[payload.routes.indexOf(wantedRoute[0])].updatedAt = Date.now();
                 flow.payload = payload;
                 pushSuccess("Edited route", this);
             })
@@ -170,6 +181,43 @@ class FlowStore {
                 delete payload.routes[payload.routes.indexOf(wantedRoute[0])];
                 flow.payload = payload;
                 pushSuccess("Deleted route", this);
+            })
+        },
+
+        addMethod: (routeId: string, method: HttpMethod) => {
+            const { payload } = this.flow;
+            const wantedRoute = this.routes.getOne(routeId);
+            if (!wantedRoute) {
+                pushError("Can't find route");
+                return;
+            }
+
+            const exist = this.routes.filter({
+                path: wantedRoute[0].path,
+                method
+            })
+
+            if (exist) {
+                return pushError(`${method} method already exist on ${wantedRoute[0].path}`);
+            }
+
+            this.makeChange(() => {
+                wantedRoute[0].methods[method] = {
+                    start: {
+                        id: String(Math.random() * Date.now()),
+                        name: "start",
+                        type: "pointer",
+                        target: "null",
+                        position: {
+                            x: 0,
+                            y: 0
+                        }
+                    }
+                };
+                payload.routes[payload.routes.indexOf(wantedRoute[0])] = wantedRoute[0];
+                payload.routes[payload.routes.indexOf(wantedRoute[0])].updatedAt = Date.now();
+                this.flow.payload = payload;
+                pushSuccess("Added method", this);
             })
         }
 

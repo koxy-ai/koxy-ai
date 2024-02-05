@@ -12,11 +12,11 @@ export function OptionsRoot({ children, store, route }: { children: ReactNode, s
                 {children}
             </ContextMenuTrigger>
             <ContextMenuContent>
+                <ContextMenuItem onClick={() => store.events.push("openMethodAdd", route)}>
+                    <Option title="Add method" icon="plus" />
+                </ContextMenuItem>
                 <ContextMenuItem onClick={() => store.events.push("openRouteEditor", route)}>
-                    <Option
-                        title="Edit route"
-                        icon="edit"
-                    />
+                    <Option title="Rename route" icon="edit" />
                 </ContextMenuItem>
                 <ContextMenuItem onClick={() => store.events.push("openRouteDelete", route)}>
                     <Option title="Delete" icon="trash" />

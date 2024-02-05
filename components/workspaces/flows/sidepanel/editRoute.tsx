@@ -20,7 +20,6 @@ export default function EditRouteDialog({ store }: { store: FlowStore }) {
     const [ route, setRoute ] = useState<Route | undefined>(undefined);
     const [ open, setOpen ] = useState<boolean>(false);
     const [ path, setPath ] = useState<string>("");
-    const [ method, setMethod ] = useState<Methods | string>("");
 
     store.events.addListener(
         "openRouteEditor",
@@ -28,7 +27,6 @@ export default function EditRouteDialog({ store }: { store: FlowStore }) {
         (route: Route) => {
             setRoute(route);
             setPath(route.path);
-            setMethod(route.method);
             setOpen(true);
         }
     )
@@ -37,13 +35,12 @@ export default function EditRouteDialog({ store }: { store: FlowStore }) {
         store.routes.editRoute({
             id: String(route?.id),
             newPath: path,
-            newMethod: method as Methods
         });
         setOpen(false);
     }
 
     return (
-        <EditDialog open={open} setOpen={setOpen} icon="tool" color="var(--power)">
+        <EditDialog open={open} setOpen={setOpen} icon="edit" color="var(--power)">
             <div className="flex flex-col gap-4 py-4">
                     <input
                         onChange={(e) => {setPath((e.target as HTMLInputElement).value)}}
@@ -51,7 +48,7 @@ export default function EditRouteDialog({ store }: { store: FlowStore }) {
                         placeholder="Enter path..."
                         defaultValue={route?.path}
                     />
-                    <Select defaultValue={route?.method} onValueChange={setMethod}>
+                    {/* <Select defaultValue={route?.method} onValueChange={setMethod}>
                         <SelectTrigger className="h-auto p-2 rounded-lg text-xs outline-0">
                             <SelectValue
                                 className="h-auto p-2 text-xs w-full outline-0 focus:border-white/30"
@@ -68,7 +65,7 @@ export default function EditRouteDialog({ store }: { store: FlowStore }) {
                                 </SelectItem>
                             ))}
                         </SelectContent>
-                    </Select>
+                    </Select> */}
                     <p className="opacity-70 text-xs">Changes will take place in the next deployment</p>
                 </div>
                 <DialogFooter>

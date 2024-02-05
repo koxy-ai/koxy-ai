@@ -157,4 +157,8 @@
     content: "";
     @apply absolute top-0 left-0 h-full w-0.5 bg-power;
   }
+
+  .editorTab {
+    @apply flex min-h-[2.7rem] max-w-[8rem] min-w-[7rem] pr-3 items-center border-r-1 border-border/40;
+  }
 }
