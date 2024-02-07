@@ -32,7 +32,7 @@ export interface MapEdge {
  * A 'pointer' type block is transformed into an animated edge, while a 'block' type can generate
  * 'failed' and/or success edges based on its 'next' property.
  * 
-**/
+ */
 export function methodBlocksToMapBlocks(blocks: Map) {
 
     const mapBlocks: Node[] = [];
@@ -40,8 +40,8 @@ export function methodBlocksToMapBlocks(blocks: Map) {
 
     const keys = Object.keys(blocks);
 
-    for ( const key in keys ) {
-        if ( !keys.hasOwnProperty(key) ) continue;
+    for (const key in keys) {
+        if (!keys.hasOwnProperty(key)) continue;
         const block = blocks[keys[key]];
 
         mapBlocks.push({
@@ -88,7 +88,7 @@ export function methodBlocksToMapBlocks(blocks: Map) {
         }
     }
 
-    return [ mapBlocks, mapEdges ];
+    return [mapBlocks, mapEdges];
 
 }
 
@@ -118,6 +118,17 @@ export function mapBlocksToMethodBlocks(nodes: Node[], edges: Edge[]) {
                     y: node.position.y
                 },
             }
+
+            const edge = edges.find(edge => edge.source === node.id);
+            if (edge) {
+                const { target } = edge;
+                const sourceNode = node;
+                const targetNode = nodes.find(node => node.id === target);
+
+                if (!sourceNode || !targetNode) continue;
+                (blocks[sourceNode.data.label] as Pointer).target = targetNode?.data.label;
+            }
+
         }
 
         if (node.type === "block") {
@@ -137,29 +148,34 @@ export function mapBlocksToMethodBlocks(nodes: Node[], edges: Edge[]) {
 
     }
 
-    for (const edge of edges) {
+    // Edges must be processed from the nodes to be able to process them based on the source type
+    // in a faster way instead of looping two times, we loop only once with the nodes.
 
-        if (edge.type === "pointer") {
-            
-            const { source, target } = edge;
-            const sourceNode = nodes.find(node => node.id === source);
-            const targetNode = nodes.find(node => node.id === target);
+    // for (const edge of edges) {
 
-            if (!sourceNode || !targetNode) continue;
-            (blocks[sourceNode.data.label] as Pointer).target = targetNode?.data.label;
+    //     const { source, target } = edge;
 
-        }
+    //     if (edge.type === "pointer") {
 
-        if (edge.type === "success" || edge.type === "failed") {
-            const { source, target } = edge;
-            const sourceNode = nodes.find(node => node.id === source);
-            const targetNode = nodes.find(node => node.id === target);
+    //         const { source, target } = edge;
+    //         const sourceNode = nodes.find(node => node.id === source);
+    //         const targetNode = nodes.find(node => node.id === target);
 
-            if (!sourceNode || !targetNode) continue;
-            (blocks[sourceNode.data.label] as Block).next[edge.type] = targetNode.data.label;
-        }
+    //         if (!sourceNode || !targetNode) continue;
+    //         (blocks[sourceNode.data.label] as Pointer).target = targetNode?.data.label;
 
-    }
+    //     }
+
+    //     if (edge.type === "success" || edge.type === "failed") {
+    //         const { source, target } = edge;
+    //         const sourceNode = nodes.find(node => node.id === source);
+    //         const targetNode = nodes.find(node => node.id === target);
+
+    //         if (!sourceNode || !targetNode) continue;
+    //         (blocks[sourceNode.data.label] as Block).next[edge.type] = targetNode.data.label;
+    //     }
+
+    // }
 
     return blocks;
 

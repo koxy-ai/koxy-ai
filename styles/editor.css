@@ -5,9 +5,9 @@
 }
 
 .react-flow__node.selected {
-    background-color: #121212;
+    /* background-color: #121212; */
     /* box-shadow: 0 0 0 2px hsl(var(--accent)); */
-    border: 1px solid hsl(var(--border));
+    border: 1px solid rgba(255, 255, 255, .2);
 }
 
 .react-flow__controls {
@@ -79,4 +79,14 @@
     border-top-right-radius: 0.5rem;
     border-bottom-right-radius: 0.5rem;
     height: 50%;
+}
+
+.react-flow__handle-left {
+    border-radius: 0px;
+    background-color: #262626;
+    left: -0.4rem;
+    border: none;
+    border-top-left-radius: 0.5rem;
+    border-bottom-left-radius: 0.5rem;
+    height: 1.2rem;
 }

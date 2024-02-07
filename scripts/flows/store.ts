@@ -296,4 +296,5 @@ const origin = {
 
 };
 
+export { session };
 export default FlowStore;

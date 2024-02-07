@@ -7,7 +7,8 @@ import ReactFlow, {
   Background,
   BackgroundVariant,
   MiniMap,
-  ConnectionLineType
+  ConnectionLineType,
+  NodeProps
 } from 'reactflow';
 import FlowStore from '@/scripts/flows/store';
 
@@ -24,6 +25,10 @@ import { shallow } from 'zustand/shallow';
 import Pointer, { PointerEdge } from "./pointer";
 import useStore from '@/scripts/flows/nodesStore';
 import ConnectionLine from './connection';
+import Image from 'next/image';
+import Block, { BlockNodeData } from './block';
+import SourceStore from '@/scripts/flows/sourceStore';
+import InputsDialog from './inputs/dialog';
 
 const selector = (state: any) => ({
   changeTab: state.changeTab,
@@ -34,14 +39,11 @@ const selector = (state: any) => ({
   onConnect: state.onConnect,
 });
 
-export default function MainCanvas({ store }: { store: FlowStore }) {
+export default function MainCanvas({ store, sourceStore }: { store: FlowStore, sourceStore: SourceStore }) {
   // State to track the current rendering component and selected tab
+  const [forceUpdate, setForceUpdate] = useState(false);
   const [renderComp, setRenderComp] = useState<"none" | "loading" | "map" | "404">("loading");
   const [tab, setTab] = useState<Tab | undefined>(undefined);
-
-  // Node and Edge types for the React Flow component
-  const nodeTypes = useMemo(() => ({ pointer: Pointer }), []);
-  const edgeTypes = useMemo(() => ({ default: PointerEdge, pointer: PointerEdge }), []);
 
   // Store hooks for state and actions related to nodes and edges
   const {
@@ -56,6 +58,12 @@ export default function MainCanvas({ store }: { store: FlowStore }) {
   useStore((state) => state.flowStore = store, shallow);
   const setNodes = useStore((state) => state.setNodes);
   const setEdges = useStore((state) => state.setEdges);
+  const updateNode = useStore((state) => state.updateNode);
+
+  // Render custom Block component and pass it the store
+  const RenderBlock = (block: NodeProps<BlockNodeData>) => {
+    return <Block store={store} block={block} updateNode={updateNode} sourceStore={sourceStore} />;
+  }
 
   // Listen to tab changes and update the UI accordingly
   store.events.addListener(
@@ -63,6 +71,7 @@ export default function MainCanvas({ store }: { store: FlowStore }) {
     "nodesMap",
     (newTab: "none" | Tab) => {
       if (newTab === "none") {
+        setForceUpdate(!forceUpdate);
         setRenderComp("none");
         return;
       }
@@ -81,6 +90,10 @@ export default function MainCanvas({ store }: { store: FlowStore }) {
       setEdges(edges as any);
     },
   );
+
+  // Node and Edge types for the React Flow component
+  const nodeTypes = useMemo(() => ({ pointer: Pointer, block: RenderBlock }), []);
+  const edgeTypes = useMemo(() => ({ default: PointerEdge, pointer: PointerEdge }), []);
 
   // Conditional rendering based on the current state
   if (renderComp === "loading") {
@@ -115,6 +128,7 @@ export default function MainCanvas({ store }: { store: FlowStore }) {
       >
         <Background variant={BackgroundVariant.Dots} color="#81818181" />
         <Controls position="top-right" showFitView={false} />
+        <InputsDialog store={store} />
         <MiniMap
           maskColor="rgba(255, 255, 255, 0.03)"
           className="rounded-md border-1"
@@ -136,21 +150,49 @@ export default function MainCanvas({ store }: { store: FlowStore }) {
   );
 }
 
-const Loading = () => (
-  <EmptyPage
-    text="Loading..."
-    icon="loader-quarter"
-    color="#515115"
-  />
-)
+const Loading = () => {
 
-const Welcome = () => (
-  <EmptyPage
-    text="Select a route method to start editing"
-    icon="route"
-    color="#515115"
-  />
-)
+  return (
+    <div className="flex flex-col items-center justify-center w-full" style={{ height: "calc(100vh - 4.8rem)" }}>
+      <div className="w-full h-36 mt-4 flex items-center justify-center relative">
+        <div className="flex w-24 h-24 relative items-center justify-center flex-col">
+          <DashedBorders />
+          <Image
+            src="/new-logo.png"
+            alt="Koxy AI Logo"
+            width={50}
+            height={50}
+            className="animate-pulse"
+          />
+          <div style={{ boxShadow: `0px 0px 150px 20px #818181` }}></div>
+        </div>
+      </div>
+      <Text size="1" color="gray">Loading...</Text>
+    </div>
+  )
+
+}
+
+const Welcome = () => {
+
+  return (
+    <div className="flex flex-col items-center justify-center w-full" style={{ height: "calc(100vh - 4.8rem)" }}>
+      <div className="w-full h-36 mt-4 flex items-center justify-center relative">
+        <div className="flex w-24 h-24 relative items-center justify-center flex-col">
+          <DashedBorders />
+          <Image
+            src="/new-logo.png"
+            alt="Koxy AI Logo"
+            width={50}
+            height={50}
+          />
+        </div>
+      </div>
+      <Text size="1" color="gray">Select a route method to start building</Text>
+    </div>
+  )
+
+}
 
 const NotFound = () => (
   <EmptyPage

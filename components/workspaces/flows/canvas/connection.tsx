@@ -4,7 +4,14 @@ export default function ConnectionLine({ connectionStatus, connectionLineStyle, 
 
     const dotColor = connectionStatus === "valid" ? "var(--power)" : "#61616161";
 
-    const [ edgePath ] = getSmoothStepPath({ sourceX: fromX, sourceY: fromY, targetX: toX, targetY: toY, sourcePosition: Position.Right });
+    const [ edgePath ] = getSmoothStepPath({ 
+      sourceX: fromX, 
+      sourceY: fromY, 
+      targetX: toX, 
+      targetY: toY, 
+      sourcePosition: Position.Right,
+      targetPosition: Position.Left,
+    });
 
     return (
         <g className="cursor-default">

@@ -81,7 +81,7 @@
   }
 
   .headRight {
-    @apply w-[50%] flex items-center justify-end gap-5;
+    @apply w-full flex items-center justify-end gap-5;
   }
 
   .buttonGradient {
@@ -160,5 +160,9 @@
 
   .editorTab {
     @apply flex min-h-[2.7rem] max-w-[8rem] min-w-[7rem] pr-3 items-center border-r-1 border-border/40;
+  }
+
+  .paramInput {
+    @apply bg-transparent outline-0 text-xs border-1 p-2 border-white/30 rounded-md border-dashed transition-all w-auto w-full hover:border-white/50 focus:border-white/60 focus:border-white/60 mt-2;
   }
 }

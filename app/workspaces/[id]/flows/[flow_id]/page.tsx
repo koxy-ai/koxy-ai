@@ -2,11 +2,20 @@ import getWorkspace from "@/app/actions/workspaces/get"
 import Workspace from "@/types/workspace"
 import Flow from "@/types/flow"
 import ClientStore from "./clientStore"
+import getBlocksSource from "@/functions/get-blocks-source";
+import SourceBlocks from "@/types/sourceBlocks";
 
 export default async function FlowEditor({ params }: { params: { id: string, flow_id: string } }) {
 
     const { id, flow_id } = params;
     const workspace: Workspace = await getWorkspace(id);
+
+    const blocksSource = await getBlocksSource() as string | null;
+
+    if (!blocksSource) {
+        return null;
+    }
+
     const flow: Flow = {
         id: "111",
         name: "this-is-flow",
@@ -45,18 +54,57 @@ export default async function FlowEditor({ params }: { params: { id: string, flo
                                 next: {}
                             },
 
-                            logger2: {
+                            "add variable": {
                                 id: String(Math.random() * Date.now()),
-                                name: "logger2",
+                                name: "Add variable",
                                 type: "block",
                                 position: {
                                     x: 160,
                                     y: 160
                                 },
                                 inputs: {},
-                                source: "general/logger",
+                                source: "general/addVariable",
                                 next: {}
-                            }
+                            },
+
+                            "add variable 2": {
+                                id: String(Math.random() * Date.now() * 2),
+                                name: "Add variable",
+                                type: "block",
+                                position: {
+                                    x: 160,
+                                    y: 160
+                                },
+                                inputs: {},
+                                source: "general/addVariable",
+                                next: {}
+                            },
+
+                            "add variable 3": {
+                                id: String(Math.random() * Date.now() * 3),
+                                name: "Add variable",
+                                type: "block",
+                                position: {
+                                    x: 160,
+                                    y: 160
+                                },
+                                inputs: {},
+                                source: "general/addVariable",
+                                next: {}
+                            },
+
+                            "add variable 4": {
+                                id: String(Math.random() * Date.now() * 4),
+                                name: "Add variable",
+                                type: "block",
+                                position: {
+                                    x: 160,
+                                    y: 160
+                                },
+                                inputs: {},
+                                source: "general/addVariable",
+                                next: {}
+                            },
 
                         },
                     }
@@ -89,6 +137,6 @@ export default async function FlowEditor({ params }: { params: { id: string, flo
         }
     }
 
-    return <ClientStore workspace={workspace} flow={flow} />;
+    return <ClientStore workspace={workspace} flow={flow} sourceBlocks={blocksSource} />;
 
 }

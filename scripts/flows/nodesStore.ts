@@ -28,6 +28,7 @@ interface RFState {
     setEdges: (edges: Edge[]) => void;
     pushChangesToFlow: () => void;
     changeTab: (tab: Tab) => void;
+    updateNode: (id: string, updates: any) => void;
 };
 
 const useStore = createWithEqualityFn<RFState>((set, get) => ({
@@ -81,7 +82,9 @@ const useStore = createWithEqualityFn<RFState>((set, get) => ({
     pushChangesToFlow: () => {
 
         const { nodes, edges, flowStore, storeTab } = get();
-        if (!flowStore || !storeTab) return;
+        if (!flowStore || !storeTab){
+            return;
+        }
 
         const wantedRoute = (flowStore.routes.getOne(storeTab.routeId) || [])[0];
         if (!wantedRoute) return;
@@ -93,6 +96,15 @@ const useStore = createWithEqualityFn<RFState>((set, get) => ({
 
     changeTab(tab: Tab) {
         set({ storeTab: tab });
+    },
+
+    updateNode(id: string, updates: any) {
+        set({ 
+            nodes: get().nodes.map(
+                node => node.id === id ? {...node, data: { ...node.data, ...updates }} : node
+            ) 
+        });
+        get().pushChangesToFlow();
     }
 
 }));

@@ -87,6 +87,8 @@ export default function Tabs({ store, update, closeAll }: Params) {
                 setOpenTab(Object.values(storeTabs)[0]);
                 update(Object.values(storeTabs)[0]);
                 store.events.push("changeTab", Object.values(storeTabs)[0]);
+            } else {
+                store.events.push("changeTab", "none");
             }
         }
     }, [])
