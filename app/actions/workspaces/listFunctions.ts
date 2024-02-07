@@ -1,22 +1,20 @@
-"use server"
+"use server";
 
-import supabaseServer from "@/app/actions/supabaseServer"
-import isArray from "@/scripts/isArray"
+import supabaseServer from "@/app/actions/supabaseServer";
+import isArray from "@/scripts/isArray";
 
 export default async function listFunctions(workspaceId: string) {
+  if (!workspaceId || typeof workspaceId !== "string") {
+    return [];
+  }
 
-	if (!workspaceId || typeof workspaceId !== "string") {
-		return []
-	}
+  const supabase = supabaseServer();
 
-	const supabase = supabaseServer()
+  const { error, data } = await supabase
+    .from("functions")
+    .select("id, name, created_at, workspace_id, status")
+    .eq("workspace_id", workspaceId)
+    .order("created_at", { ascending: false });
 
-	const { error, data } = await supabase
-		.from("functions")
-		.select("id, name, created_at, workspace_id, status")
-		.eq("workspace_id", workspaceId)
-		.order("created_at", { ascending: false })
-
-	return error || data
-
+  return error || data;
 }

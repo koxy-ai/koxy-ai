@@ -33,7 +33,7 @@
     --ring: 0 0% 3.9%;
 
     --radius: 0.5rem;
-    --power: #6B5DEF;
+    --power: #6b5def;
   }
 
   .dark {
@@ -85,7 +85,11 @@
   }
 
   .buttonGradient {
-    background: linear-gradient(185deg, rgba(0, 0, 0, 0) 0%, rgba(12, 12, 12, 1) 80%);
+    background: linear-gradient(
+      185deg,
+      rgba(0, 0, 0, 0) 0%,
+      rgba(12, 12, 12, 1) 80%
+    );
   }
 
   .dropMenu {
@@ -111,7 +115,7 @@
   }
 
   .sidebarButton:hover {
-    text-shadow: 0px 0px 5px rgba(255, 255, 255, .4);
+    text-shadow: 0px 0px 5px rgba(255, 255, 255, 0.4);
   }
 
   .innerMain {
@@ -121,20 +125,42 @@
   .pattern1 {
     background-color: #e5e5f7;
     opacity: 0.8;
-    background-image: radial-gradient(ellipse farthest-corner at 5px 6px, #eee, #eee 50%, black 50%);
+    background-image: radial-gradient(
+      ellipse farthest-corner at 5px 6px,
+      #eee,
+      #eee 50%,
+      black 50%
+    );
     background-size: 10px 10px;
   }
 
   .pattern2 {
     background-color: #21212121;
     opacity: 0.8;
-    background-image: repeating-linear-gradient(45deg, #41414141 25%, transparent 25%, transparent 75%, #41414141 75%, #31313131), repeating-linear-gradient(45deg, #25252525 25%, #25252525 25%, #25252525 75%, #43434343 75%, #43434343);
-    background-position: 0 0, 10px 10px;
+    background-image: repeating-linear-gradient(
+        45deg,
+        #41414141 25%,
+        transparent 25%,
+        transparent 75%,
+        #41414141 75%,
+        #31313131
+      ),
+      repeating-linear-gradient(
+        45deg,
+        #25252525 25%,
+        #25252525 25%,
+        #25252525 75%,
+        #43434343 75%,
+        #43434343
+      );
+    background-position:
+      0 0,
+      10px 10px;
     background-size: 20px 20px;
   }
 
   .powerShadow {
-    box-shadow: 0px 0px 3px 0px #6B5DEF;
+    box-shadow: 0px 0px 3px 0px #6b5def;
   }
 
   .topPath {
@@ -150,7 +176,7 @@
   }
 
   .openRoute {
-    @apply flex items-center gap-2 p-1.5 pl-5 pr-5 cursor-pointer bg-[#31313131] relative
+    @apply flex items-center gap-2 p-1.5 pl-5 pr-5 cursor-pointer bg-[#31313131] relative;
   }
 
   .openRoute::before {

@@ -25,7 +25,7 @@ interface Condition {
   position: {
     x: number;
     y: number;
-  }
+  };
 }
 
 export default Condition;

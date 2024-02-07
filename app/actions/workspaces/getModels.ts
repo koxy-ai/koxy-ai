@@ -1,25 +1,21 @@
-"use server"
+"use server";
 
-import supabaseServer from "@/app/actions/supabaseServer"
+import supabaseServer from "@/app/actions/supabaseServer";
 
-export default async function(id: string) {
+export default async function (id: string) {
+  if (!id || typeof id !== "string") {
+    return undefined;
+  }
 
-	if (!id || typeof id !== "string") {
-		return undefined
-	}
+  const supabase = supabaseServer();
 
-	const supabase = supabaseServer()
+  const { error, data } = await supabase.from("models").select("*");
 
-	const { error, data } = await supabase
-		.from("models")
-		.select("*")
+  if (error) {
+    return {
+      err: error,
+    };
+  }
 
-	if (error) {
-		return {
-			err: error
-		}
-	}
-
-	return data
-
+  return data;
 }
